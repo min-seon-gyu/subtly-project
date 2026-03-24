@@ -1,9 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSubscriptionStore } from '../../stores/useSubscriptionStore';
 import SubscriptionCard from '../../components/SubscriptionCard';
+import SearchBar from '../../components/SearchBar';
+import CategoryFilter from '../../components/CategoryFilter';
 import { COLORS } from '../../constants/colors';
 import { Subscription } from '../../types/subscription';
 
@@ -11,6 +13,8 @@ export default function SubscriptionsScreen() {
   const { subscriptions, fetchSubscriptions } = useSubscriptionStore();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -24,12 +28,20 @@ export default function SubscriptionsScreen() {
     setRefreshing(false);
   }, []);
 
+  const filtered = useMemo(() => {
+    let result = subscriptions;
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      result = result.filter((s) => s.name.toLowerCase().includes(q));
+    }
+    if (selectedCategory) {
+      result = result.filter((s) => s.category === selectedCategory);
+    }
+    return result;
+  }, [subscriptions, search, selectedCategory]);
+
   const handlePress = (subscription: Subscription) => {
     router.push({ pathname: '/detail', params: { id: subscription.id } });
-  };
-
-  const handleAdd = () => {
-    router.push('/add');
   };
 
   return (
@@ -37,12 +49,14 @@ export default function SubscriptionsScreen() {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>구독 목록</Text>
-          <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
+          <TouchableOpacity style={styles.addButton} onPress={() => router.push('/add')}>
             <Text style={styles.addButtonText}>+ 추가</Text>
           </TouchableOpacity>
         </View>
+        <SearchBar value={search} onChangeText={setSearch} placeholder="구독 검색" />
+        <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} />
         <FlatList
-          data={subscriptions}
+          data={filtered}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <SubscriptionCard subscription={item} onPress={handlePress} />
@@ -54,9 +68,10 @@ export default function SubscriptionsScreen() {
           }
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyIcon}>📭</Text>
-              <Text style={styles.emptyText}>등록된 구독이 없습니다</Text>
-              <Text style={styles.emptySubText}>+ 추가 버튼으로 구독을 등록해보세요</Text>
+              <Text style={styles.emptyIcon}>{search || selectedCategory ? '🔍' : '📭'}</Text>
+              <Text style={styles.emptyText}>
+                {search || selectedCategory ? '검색 결과가 없습니다' : '등록된 구독이 없습니다'}
+              </Text>
             </View>
           }
         />
@@ -79,7 +94,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   title: {
     fontSize: 24,
@@ -112,10 +127,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.textSecondary,
     marginTop: 16,
-  },
-  emptySubText: {
-    fontSize: 14,
-    color: COLORS.textMuted,
-    marginTop: 6,
   },
 });

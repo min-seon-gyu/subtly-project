@@ -4,15 +4,21 @@ import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useAuthStore } from '../stores/useAuthStore';
+import { useThemeStore } from '../stores/useThemeStore';
+import { useCurrencyStore } from '../stores/useCurrencyStore';
 import { COLORS } from '../constants/colors';
 
 export default function RootLayout() {
   const { token, isLoading, loadToken } = useAuthStore();
+  const { loadMode } = useThemeStore();
+  const { loadCurrency } = useCurrencyStore();
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
     loadToken();
+    loadMode();
+    loadCurrency();
   }, []);
 
   useEffect(() => {

@@ -3,11 +3,21 @@ import { SafeAreaView } from 'react-native';
 import { useState } from 'react';
 import { COLORS } from '../../constants/colors';
 import { useAuthStore } from '../../stores/useAuthStore';
+import { useThemeStore } from '../../stores/useThemeStore';
+import { useCurrencyStore, CURRENCIES } from '../../stores/useCurrencyStore';
+
+const THEME_OPTIONS = [
+  { label: '시스템', value: 'system' as const },
+  { label: '라이트', value: 'light' as const },
+  { label: '다크', value: 'dark' as const },
+];
 
 export default function SettingsScreen() {
   const [notificationEnabled, setNotificationEnabled] = useState(true);
   const [reminderDays, setReminderDays] = useState(3);
   const { nickname, logout } = useAuthStore();
+  const { mode, setMode } = useThemeStore();
+  const { currency, setCurrency } = useCurrencyStore();
 
   const handleLogout = () => {
     Alert.alert('로그아웃', '정말 로그아웃 하시겠습니까?', [
@@ -54,6 +64,40 @@ export default function SettingsScreen() {
                 <Text style={styles.stepperText}>+</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>테마</Text>
+          <View style={styles.themeRow}>
+            {THEME_OPTIONS.map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[styles.themeButton, mode === opt.value && styles.themeButtonActive]}
+                onPress={() => setMode(opt.value)}
+              >
+                <Text style={[styles.themeText, mode === opt.value && styles.themeTextActive]}>
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>통화</Text>
+          <View style={styles.themeRow}>
+            {CURRENCIES.map((c) => (
+              <TouchableOpacity
+                key={c.code}
+                style={[styles.themeButton, currency === c.code && styles.themeButtonActive]}
+                onPress={() => setCurrency(c.code)}
+              >
+                <Text style={[styles.themeText, currency === c.code && styles.themeTextActive]}>
+                  {c.symbol} {c.code}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
@@ -168,5 +212,30 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: COLORS.danger,
+  },
+  themeRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  themeButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: COLORS.surface,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  themeButtonActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  themeText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
+  },
+  themeTextActive: {
+    color: '#FFFFFF',
   },
 });

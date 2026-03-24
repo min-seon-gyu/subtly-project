@@ -21,14 +21,27 @@ client.interceptors.request.use(async (config) => {
   return config;
 });
 
+let isRefreshing = false;
+
 client.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      await SecureStore.deleteItemAsync('token');
-      await SecureStore.deleteItemAsync('nickname');
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isRefreshing) {
+      originalRequest._retry = true;
+      isRefreshing = true;
+
       const { useAuthStore } = require('../stores/useAuthStore');
-      useAuthStore.setState({ token: null, nickname: null });
+      const success = await useAuthStore.getState().refreshToken();
+      isRefreshing = false;
+
+      if (success) {
+        const newToken = await SecureStore.getItemAsync('token');
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return client(originalRequest);
+      }
+
       Toast.show({ type: 'error', text1: '세션 만료', text2: '다시 로그인해주세요.' });
     } else if (error.response?.status === 400) {
       const message = error.response?.data?.message ?? '요청을 확인해주세요.';
