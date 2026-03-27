@@ -62,7 +62,6 @@ export default function RootLayout() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="auth/login" options={{ headerShown: false }} />
-        <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
         <Stack.Screen name="add" options={{ title: '구독 추가', presentation: 'modal' }} />
         <Stack.Screen name="edit" options={{ title: '구독 수정' }} />
         <Stack.Screen name="detail" options={{ title: '구독 상세' }} />

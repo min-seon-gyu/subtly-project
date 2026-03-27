@@ -1,24 +1,38 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native';
-import { useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
+import * as Linking from 'expo-linking';
 import { useAuthStore } from '../../stores/useAuthStore';
 import { COLORS } from '../../constants/colors';
+import { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } from '../../constants/config';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuthStore();
-  const router = useRouter();
+  const { kakaoLogin } = useAuthStore();
 
-  const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) return;
+  const handleKakaoLogin = async () => {
     setLoading(true);
     try {
-      await login(email.trim(), password);
+      const authUrl =
+        `https://kauth.kakao.com/oauth/authorize?response_type=code` +
+        `&client_id=${KAKAO_REST_API_KEY}` +
+        `&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}`;
+
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, KAKAO_REDIRECT_URI);
+
+      if (result.type === 'success' && result.url) {
+        const parsed = Linking.parse(result.url);
+        const code = parsed.queryParams?.code as string | undefined;
+
+        if (code) {
+          await kakaoLogin(code, KAKAO_REDIRECT_URI);
+        } else {
+          Alert.alert('로그인 실패', '카카오 인가코드를 받지 못했습니다.');
+        }
+      }
     } catch {
-      Alert.alert('로그인 실패', '이메일 또는 비밀번호를 확인해주세요.');
+      Alert.alert('로그인 실패', '카카오 로그인 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -26,46 +40,22 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
+      <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.logo}>Subtly</Text>
           <Text style={styles.subtitle}>은근히 새는 구독, 한눈에.</Text>
         </View>
 
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="이메일"
-            placeholderTextColor={COLORS.textMuted}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="비밀번호"
-            placeholderTextColor={COLORS.textMuted}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleLogin}
-            disabled={loading}
-          >
-            <Text style={styles.buttonText}>{loading ? '로그인 중...' : '로그인'}</Text>
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity onPress={() => router.push('/auth/signup')}>
-          <Text style={styles.link}>계정이 없으신가요? <Text style={styles.linkBold}>회원가입</Text></Text>
+        <TouchableOpacity
+          style={[styles.kakaoButton, loading && styles.buttonDisabled]}
+          onPress={handleKakaoLogin}
+          disabled={loading}
+        >
+          <Text style={styles.kakaoButtonText}>
+            {loading ? '로그인 중...' : '카카오로 시작하기'}
+          </Text>
         </TouchableOpacity>
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -82,7 +72,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 60,
   },
   logo: {
     fontSize: 40,
@@ -94,41 +84,18 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginTop: 8,
   },
-  form: {
-    gap: 14,
-    marginBottom: 24,
-  },
-  input: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 14,
-    padding: 16,
-    fontSize: 16,
-    color: COLORS.text,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  button: {
-    backgroundColor: COLORS.primary,
+  kakaoButton: {
+    backgroundColor: '#FEE500',
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 6,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
-  buttonText: {
+  kakaoButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  link: {
-    textAlign: 'center',
-    fontSize: 14,
-    color: COLORS.textSecondary,
-  },
-  linkBold: {
-    color: COLORS.primary,
-    fontWeight: '700',
+    color: '#191919',
   },
 });

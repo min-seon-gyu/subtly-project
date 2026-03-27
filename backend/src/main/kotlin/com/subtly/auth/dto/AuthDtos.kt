@@ -1,29 +1,13 @@
 package com.subtly.auth.dto
 
-import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.Size
 
-data class SignupRequest(
-    @field:Email
+data class KakaoLoginRequest(
     @field:NotBlank
-    val email: String,
+    val code: String,
 
     @field:NotBlank
-    @field:Size(min = 6)
-    val password: String,
-
-    @field:NotBlank
-    val nickname: String,
-)
-
-data class LoginRequest(
-    @field:Email
-    @field:NotBlank
-    val email: String,
-
-    @field:NotBlank
-    val password: String,
+    val redirectUri: String,
 )
 
 data class TokenResponse(

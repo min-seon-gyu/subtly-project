@@ -36,5 +36,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ],
   extra: {
     apiBaseUrl: process.env.API_BASE_URL ?? 'http://localhost:8080',
+    kakaoRestApiKey: process.env.KAKAO_REST_API_KEY ?? 'your-kakao-rest-api-key',
   },
 });

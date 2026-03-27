@@ -6,6 +6,10 @@ jwt:
   secret: ${JWT_SECRET:subtly-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256}
   expiration: ${JWT_EXPIRATION:86400000}
 
+kakao:
+  client-id: ${KAKAO_CLIENT_ID:your-kakao-rest-api-key}
+  client-secret: ${KAKAO_CLIENT_SECRET:}
+
 ---
 spring:
   config:

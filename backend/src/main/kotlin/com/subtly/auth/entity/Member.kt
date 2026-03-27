@@ -6,17 +6,16 @@ import java.time.LocalDateTime
 @Entity
 @Table(
     name = "members",
-    indexes = [Index(name = "idx_member_email", columnList = "email", unique = true)]
+    indexes = [Index(name = "idx_member_kakao_id", columnList = "kakaoId", unique = true)]
 )
 class Member(
     @Column(nullable = false, unique = true)
-    val email: String,
+    val kakaoId: Long,
 
     @Column(nullable = false)
-    val password: String,
+    var nickname: String,
 
-    @Column(nullable = false)
-    val nickname: String,
+    var profileImageUrl: String? = null,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

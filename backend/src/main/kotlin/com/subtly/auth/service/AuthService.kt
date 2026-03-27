@@ -1,14 +1,12 @@
 package com.subtly.auth.service
 
-import com.subtly.auth.dto.LoginRequest
-import com.subtly.auth.dto.SignupRequest
+import com.subtly.auth.client.KakaoOAuthClient
 import com.subtly.auth.dto.TokenResponse
 import com.subtly.auth.entity.Member
 import com.subtly.auth.entity.RefreshToken
 import com.subtly.auth.jwt.JwtTokenProvider
 import com.subtly.auth.repository.MemberRepository
 import com.subtly.auth.repository.RefreshTokenRepository
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -18,32 +16,29 @@ import java.util.*
 @Transactional(readOnly = true)
 class AuthService(
     private val memberRepository: MemberRepository,
-    private val passwordEncoder: PasswordEncoder,
     private val jwtTokenProvider: JwtTokenProvider,
     private val refreshTokenRepository: RefreshTokenRepository,
+    private val kakaoOAuthClient: KakaoOAuthClient,
 ) {
     @Transactional
-    fun signup(request: SignupRequest): TokenResponse {
-        require(!memberRepository.existsByEmail(request.email)) { "이미 가입된 이메일입니다" }
+    fun kakaoLogin(code: String, redirectUri: String): TokenResponse {
+        val kakaoToken = kakaoOAuthClient.getAccessToken(code, redirectUri)
+        val kakaoUser = kakaoOAuthClient.getUserInfo(kakaoToken)
 
-        val member = memberRepository.save(
-            Member(
-                email = request.email,
-                password = passwordEncoder.encode(request.password),
-                nickname = request.nickname,
-            )
-        )
-        return createTokenResponse(member)
-    }
+        val member = memberRepository.findByKakaoId(kakaoUser.id)
+            .orElseGet {
+                memberRepository.save(
+                    Member(
+                        kakaoId = kakaoUser.id,
+                        nickname = kakaoUser.nickname,
+                        profileImageUrl = kakaoUser.profileImageUrl,
+                    )
+                )
+            }
 
-    @Transactional
-    fun login(request: LoginRequest): TokenResponse {
-        val member = memberRepository.findByEmail(request.email)
-            .orElseThrow { IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다") }
-
-        require(passwordEncoder.matches(request.password, member.password)) {
-            "이메일 또는 비밀번호가 올바르지 않습니다"
-        }
+        // 기존 회원이면 닉네임/프로필 업데이트
+        member.nickname = kakaoUser.nickname
+        member.profileImageUrl = kakaoUser.profileImageUrl
 
         return createTokenResponse(member)
     }
@@ -63,7 +58,7 @@ class AuthService(
     }
 
     private fun createTokenResponse(member: Member): TokenResponse {
-        val accessToken = jwtTokenProvider.createToken(member.id, member.email)
+        val accessToken = jwtTokenProvider.createToken(member.id, member.kakaoId.toString())
 
         refreshTokenRepository.deleteByMemberId(member.id)
         val refreshToken = refreshTokenRepository.save(

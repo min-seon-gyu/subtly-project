@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
@@ -29,9 +28,6 @@ class SubscriptionServiceTest {
     @Autowired
     lateinit var memberRepository: MemberRepository
 
-    @Autowired
-    lateinit var passwordEncoder: PasswordEncoder
-
     private var memberId: Long = 0
 
     @BeforeEach
@@ -40,8 +36,7 @@ class SubscriptionServiceTest {
         memberRepository.deleteAll()
         val member = memberRepository.save(
             Member(
-                email = "test@subtly.com",
-                password = passwordEncoder.encode("password"),
+                kakaoId = 12345L,
                 nickname = "테스터",
             )
         )
@@ -87,7 +82,7 @@ class SubscriptionServiceTest {
         subscriptionService.createSubscription(memberId, createRequest())
 
         val otherMember = memberRepository.save(
-            Member(email = "other@subtly.com", password = "pass", nickname = "다른사람")
+            Member(kakaoId = 99999L, nickname = "다른사람")
         )
         val list = subscriptionService.getSubscriptions(otherMember.id)
 
@@ -132,7 +127,7 @@ class SubscriptionServiceTest {
     fun `다른 사용자 구독 수정 실패`() {
         val created = subscriptionService.createSubscription(memberId, createRequest())
         val otherMember = memberRepository.save(
-            Member(email = "other@subtly.com", password = "pass", nickname = "다른사람")
+            Member(kakaoId = 99999L, nickname = "다른사람")
         )
 
         assertThatThrownBy {
@@ -147,7 +142,7 @@ class SubscriptionServiceTest {
     fun `다른 사용자 구독 삭제 실패`() {
         val created = subscriptionService.createSubscription(memberId, createRequest())
         val otherMember = memberRepository.save(
-            Member(email = "other@subtly.com", password = "pass", nickname = "다른사람")
+            Member(kakaoId = 99999L, nickname = "다른사람")
         )
 
         assertThatThrownBy {

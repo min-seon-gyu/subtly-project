@@ -10,3 +10,6 @@ export const API_BASE_URL =
     ios: 'http://localhost:8080',
     default: 'http://localhost:8080',
   });
+
+export const KAKAO_REST_API_KEY = extra?.kakaoRestApiKey ?? 'your-kakao-rest-api-key';
+export const KAKAO_REDIRECT_URI = 'subtly://auth';

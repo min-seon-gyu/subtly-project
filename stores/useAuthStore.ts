@@ -7,8 +7,7 @@ interface AuthState {
   token: string | null;
   nickname: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, nickname: string) => Promise<void>;
+  kakaoLogin: (code: string, redirectUri: string) => Promise<void>;
   logout: () => Promise<void>;
   loadToken: () => Promise<void>;
   refreshToken: () => Promise<boolean>;
@@ -41,18 +40,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  login: async (email, password) => {
-    const res = await axios.post(`${API_BASE_URL}/api/auth/login`, { email, password });
+  kakaoLogin: async (code, redirectUri) => {
+    const res = await axios.post(`${API_BASE_URL}/api/auth/kakao`, { code, redirectUri });
     const { accessToken, refreshToken, nickname } = res.data;
     await saveTokens(accessToken, refreshToken, nickname);
     set({ token: accessToken, nickname });
-  },
-
-  signup: async (email, password, nickname) => {
-    const res = await axios.post(`${API_BASE_URL}/api/auth/signup`, { email, password, nickname });
-    const { accessToken, refreshToken, nickname: name } = res.data;
-    await saveTokens(accessToken, refreshToken, name);
-    set({ token: accessToken, nickname: name });
   },
 
   logout: async () => {
