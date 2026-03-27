@@ -57,6 +57,11 @@ class AuthService(
         return createTokenResponse(member)
     }
 
+    @Transactional
+    fun logout(memberId: Long) {
+        refreshTokenRepository.deleteByMemberId(memberId)
+    }
+
     private fun createTokenResponse(member: Member): TokenResponse {
         val accessToken = jwtTokenProvider.createToken(member.id, member.kakaoId.toString())
 

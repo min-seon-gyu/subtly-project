@@ -48,6 +48,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
+    try {
+      const token = await SecureStore.getItemAsync('token');
+      if (token) {
+        await axios.post(`${API_BASE_URL}/api/auth/logout`, null, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+    } catch {
+      // 서버 호출 실패해도 로컬 토큰은 삭제
+    }
     await clearTokens();
     set({ token: null, nickname: null });
   },

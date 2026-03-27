@@ -54,7 +54,7 @@ client.interceptors.response.use(
 );
 
 // PREVIEW_MODE: true = mock 데이터, false = 실제 API
-const PREVIEW_MODE = true;
+const PREVIEW_MODE = false;
 
 const mockData: Subscription[] = [
   { id: '1', name: 'Netflix', price: 17000, billingCycle: 'monthly', billingDate: 15, category: 'video', color: '#E50914', icon: '🎬', isActive: true, createdAt: '2024-01-01', updatedAt: '2024-01-01' },

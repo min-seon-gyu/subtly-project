@@ -13,10 +13,19 @@ export default function AddScreen() {
   const router = useRouter();
   const { addSubscription } = useSubscriptionStore();
   const [preset, setPreset] = useState<SubscriptionPreset | undefined>();
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (data: CreateSubscriptionRequest) => {
-    await addSubscription(data);
-    router.back();
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await addSubscription(data);
+      router.back();
+    } catch {
+      // Toast는 store에서 처리
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handlePresetSelect = (selected: SubscriptionPreset) => {

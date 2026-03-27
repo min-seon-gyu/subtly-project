@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import Toast from 'react-native-toast-message';
 import { Subscription, SubscriptionSummary, CreateSubscriptionRequest, UpdateSubscriptionRequest } from '../types/subscription';
 import { api } from '../services/api';
 
@@ -20,33 +21,70 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
 
   fetchSubscriptions: async () => {
     set({ isLoading: true });
-    const subscriptions = await api.getSubscriptions();
-    set({ subscriptions, isLoading: false });
+    try {
+      const subscriptions = await api.getSubscriptions();
+      set({ subscriptions });
+    } catch {
+      Toast.show({ type: 'error', text1: '구독 목록을 불러올 수 없습니다.' });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   fetchSummary: async () => {
-    const summary = await api.getSummary();
-    set({ summary });
+    set({ isLoading: true });
+    try {
+      const summary = await api.getSummary();
+      set({ summary });
+    } catch {
+      Toast.show({ type: 'error', text1: '요약 정보를 불러올 수 없습니다.' });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   addSubscription: async (req) => {
-    await api.createSubscription(req);
-    const subscriptions = await api.getSubscriptions();
-    const summary = await api.getSummary();
-    set({ subscriptions, summary });
+    try {
+      await api.createSubscription(req);
+      const [subscriptions, summary] = await Promise.all([
+        api.getSubscriptions(),
+        api.getSummary(),
+      ]);
+      set({ subscriptions, summary });
+      Toast.show({ type: 'success', text1: '구독이 추가되었습니다.' });
+    } catch {
+      Toast.show({ type: 'error', text1: '구독 추가에 실패했습니다.' });
+      throw new Error('addSubscription failed');
+    }
   },
 
   updateSubscription: async (id, req) => {
-    await api.updateSubscription(id, req);
-    const subscriptions = await api.getSubscriptions();
-    const summary = await api.getSummary();
-    set({ subscriptions, summary });
+    try {
+      await api.updateSubscription(id, req);
+      const [subscriptions, summary] = await Promise.all([
+        api.getSubscriptions(),
+        api.getSummary(),
+      ]);
+      set({ subscriptions, summary });
+      Toast.show({ type: 'success', text1: '구독이 수정되었습니다.' });
+    } catch {
+      Toast.show({ type: 'error', text1: '구독 수정에 실패했습니다.' });
+      throw new Error('updateSubscription failed');
+    }
   },
 
   deleteSubscription: async (id) => {
-    await api.deleteSubscription(id);
-    const subscriptions = await api.getSubscriptions();
-    const summary = await api.getSummary();
-    set({ subscriptions, summary });
+    try {
+      await api.deleteSubscription(id);
+      const [subscriptions, summary] = await Promise.all([
+        api.getSubscriptions(),
+        api.getSummary(),
+      ]);
+      set({ subscriptions, summary });
+      Toast.show({ type: 'success', text1: '구독이 삭제되었습니다.' });
+    } catch {
+      Toast.show({ type: 'error', text1: '구독 삭제에 실패했습니다.' });
+      throw new Error('deleteSubscription failed');
+    }
   },
 }));

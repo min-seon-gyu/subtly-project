@@ -5,10 +5,10 @@ services:
     image: mysql:8.0
     container_name: subtly-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root1234}
       MYSQL_DATABASE: subtly
-      MYSQL_USER: subtly
-      MYSQL_PASSWORD: subtly1234
+      MYSQL_USER: ${DB_USERNAME:-subtly}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-subtly1234}
     ports:
       - "3306:3306"
     volumes:

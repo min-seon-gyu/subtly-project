@@ -17,6 +17,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.subtly.app',
+    buildNumber: '1',
+    infoPlist: {
+      NSAppTransportSecurity: {
+        NSAllowsArbitraryLoads: false,
+      },
+    },
   },
   android: {
     adaptiveIcon: {
@@ -26,6 +32,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: './assets/android-icon-monochrome.png',
     },
     package: 'com.subtly.app',
+    versionCode: 1,
   },
   web: {
     favicon: './assets/favicon.png',
@@ -33,9 +40,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     'expo-secure-store',
+    'expo-web-browser',
   ],
   extra: {
     apiBaseUrl: process.env.API_BASE_URL ?? 'http://localhost:8080',
-    kakaoRestApiKey: process.env.KAKAO_REST_API_KEY ?? 'your-kakao-rest-api-key',
+    kakaoRestApiKey: process.env.KAKAO_REST_API_KEY ?? '',
   },
 });

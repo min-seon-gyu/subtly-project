@@ -9,7 +9,7 @@ import { useCurrencyStore } from '../stores/useCurrencyStore';
 import { COLORS } from '../constants/colors';
 
 // PREVIEW_MODE: true = 인증 우회, mock 데이터로 전체 화면 확인
-const PREVIEW_MODE = true;
+const PREVIEW_MODE = false;
 
 export default function RootLayout() {
   const { token, isLoading, loadToken } = useAuthStore();

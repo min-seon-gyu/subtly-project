@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native';
@@ -10,6 +11,7 @@ export default function EditScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { subscriptions, updateSubscription } = useSubscriptionStore();
+  const [submitting, setSubmitting] = useState(false);
 
   const subscription = subscriptions.find((s) => s.id === id);
 
@@ -19,8 +21,16 @@ export default function EditScreen() {
   }
 
   const handleSubmit = async (data: CreateSubscriptionRequest) => {
-    await updateSubscription(subscription.id, data);
-    router.back();
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await updateSubscription(subscription.id, data);
+      router.back();
+    } catch {
+      // Toast는 store에서 처리
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

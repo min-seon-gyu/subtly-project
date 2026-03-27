@@ -5,6 +5,8 @@ import com.subtly.auth.dto.RefreshRequest
 import com.subtly.auth.dto.TokenResponse
 import com.subtly.auth.service.AuthService
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -20,5 +22,12 @@ class AuthController(
     @PostMapping("/refresh")
     fun refresh(@Valid @RequestBody request: RefreshRequest): TokenResponse {
         return authService.refresh(request.refreshToken)
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun logout() {
+        val memberId = SecurityContextHolder.getContext().authentication?.principal as? Long ?: return
+        authService.logout(memberId)
     }
 }
