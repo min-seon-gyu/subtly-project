@@ -1,5 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS } from '../constants/colors';
+import { useTheme } from '../hooks/useTheme';
+import { ColorScheme } from '../constants/colors';
+import { useCurrencyStore } from '../stores/useCurrencyStore';
 
 interface Props {
   totalMonthly: number;
@@ -7,11 +9,11 @@ interface Props {
   activeCount: number;
 }
 
-function formatPrice(price: number): string {
-  return price.toLocaleString('ko-KR');
-}
-
 export default function MonthlyChart({ totalMonthly, totalYearly, activeCount }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+  const { formatPrice } = useCurrencyStore();
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>이번 달 구독료</Text>
@@ -31,9 +33,9 @@ export default function MonthlyChart({ totalMonthly, totalYearly, activeCount }:
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   container: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     borderRadius: 20,
     padding: 24,
     marginBottom: 24,

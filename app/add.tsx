@@ -7,9 +7,12 @@ import PresetPicker from '../components/PresetPicker';
 import { useSubscriptionStore } from '../stores/useSubscriptionStore';
 import { CreateSubscriptionRequest } from '../types/subscription';
 import { SubscriptionPreset } from '../constants/presets';
-import { COLORS } from '../constants/colors';
+import { useTheme } from '../hooks/useTheme';
+import { ColorScheme } from '../constants/colors';
 
 export default function AddScreen() {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const router = useRouter();
   const { addSubscription } = useSubscriptionStore();
   const [preset, setPreset] = useState<SubscriptionPreset | undefined>();
@@ -53,10 +56,10 @@ export default function AddScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,

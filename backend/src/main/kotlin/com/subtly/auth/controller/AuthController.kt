@@ -30,4 +30,11 @@ class AuthController(
         val memberId = SecurityContextHolder.getContext().authentication?.principal as? Long ?: return
         authService.logout(memberId)
     }
+
+    @DeleteMapping("/account")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteAccount() {
+        val memberId = SecurityContextHolder.getContext().authentication?.principal as? Long ?: return
+        authService.deleteAccount(memberId)
+    }
 }

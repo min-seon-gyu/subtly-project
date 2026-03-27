@@ -1,15 +1,13 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Subscription } from '../types/subscription';
-import { COLORS } from '../constants/colors';
 import { CATEGORIES } from '../constants/colors';
+import { useTheme } from '../hooks/useTheme';
+import { ColorScheme } from '../constants/colors';
+import { useCurrencyStore } from '../stores/useCurrencyStore';
 
 interface Props {
   subscription: Subscription;
   onPress: (subscription: Subscription) => void;
-}
-
-function formatPrice(price: number): string {
-  return price.toLocaleString('ko-KR') + '원';
 }
 
 function getCycleLabel(cycle: string): string {
@@ -22,6 +20,10 @@ function getCycleLabel(cycle: string): string {
 }
 
 export default function SubscriptionCard({ subscription, onPress }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+  const { formatPrice } = useCurrencyStore();
+
   const category = CATEGORIES.find((c) => c.value === subscription.category);
 
   return (
@@ -45,11 +47,11 @@ export default function SubscriptionCard({ subscription, onPress }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
@@ -76,11 +78,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
   },
   category: {
     fontSize: 13,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   priceContainer: {
@@ -89,11 +91,11 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     fontWeight: '700',
-    color: COLORS.text,
+    color: colors.text,
   },
   cycle: {
     fontSize: 12,
-    color: COLORS.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
 });

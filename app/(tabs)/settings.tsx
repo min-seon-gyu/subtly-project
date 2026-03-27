@@ -1,10 +1,11 @@
 import { View, Text, StyleSheet, TouchableOpacity, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native';
-import { useState } from 'react';
-import { COLORS } from '../../constants/colors';
+import { useTheme } from '../../hooks/useTheme';
+import { ColorScheme } from '../../constants/colors';
 import { useAuthStore } from '../../stores/useAuthStore';
 import { useThemeStore } from '../../stores/useThemeStore';
 import { useCurrencyStore, CURRENCIES } from '../../stores/useCurrencyStore';
+import { useNotificationStore } from '../../stores/useNotificationStore';
 
 const THEME_OPTIONS = [
   { label: '시스템', value: 'system' as const },
@@ -13,9 +14,10 @@ const THEME_OPTIONS = [
 ];
 
 export default function SettingsScreen() {
-  const [notificationEnabled, setNotificationEnabled] = useState(true);
-  const [reminderDays, setReminderDays] = useState(3);
-  const { nickname, logout } = useAuthStore();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+  const { enabled: notificationEnabled, reminderDays, setEnabled: setNotificationEnabled, setReminderDays } = useNotificationStore();
+  const { nickname, logout, deleteAccount } = useAuthStore();
   const { mode, setMode } = useThemeStore();
   const { currency, setCurrency } = useCurrencyStore();
 
@@ -24,6 +26,17 @@ export default function SettingsScreen() {
       { text: '취소', style: 'cancel' },
       { text: '로그아웃', style: 'destructive', onPress: logout },
     ]);
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      '계정 삭제',
+      '모든 데이터가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.',
+      [
+        { text: '취소', style: 'cancel' },
+        { text: '삭제', style: 'destructive', onPress: deleteAccount },
+      ],
+    );
   };
 
   return (
@@ -41,7 +54,7 @@ export default function SettingsScreen() {
             <Switch
               value={notificationEnabled}
               onValueChange={setNotificationEnabled}
-              trackColor={{ true: COLORS.primary }}
+              trackColor={{ true: colors.primary }}
             />
           </View>
           <View style={styles.row}>
@@ -110,6 +123,9 @@ export default function SettingsScreen() {
           <TouchableOpacity style={styles.logoutRow} onPress={handleLogout}>
             <Text style={styles.logoutText}>로그아웃</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.logoutRow} onPress={handleDeleteAccount}>
+            <Text style={styles.deleteText}>계정 삭제</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
@@ -124,10 +140,10 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,
@@ -137,7 +153,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 24,
   },
   section: {
@@ -146,7 +162,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: COLORS.textMuted,
+    color: colors.textMuted,
     textTransform: 'uppercase',
     marginBottom: 12,
   },
@@ -154,7 +170,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderRadius: 14,
     padding: 16,
     marginBottom: 8,
@@ -165,16 +181,16 @@ const styles = StyleSheet.create({
   rowLabel: {
     fontSize: 15,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
   },
   rowSub: {
     fontSize: 13,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   rowValue: {
     fontSize: 15,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   stepper: {
     flexDirection: 'row',
@@ -185,24 +201,24 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
   stepperText: {
     fontSize: 18,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
   },
   stepperValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: COLORS.text,
+    color: colors.text,
     minWidth: 20,
     textAlign: 'center',
   },
   logoutRow: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderRadius: 14,
     padding: 16,
     alignItems: 'center',
@@ -211,7 +227,12 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 15,
     fontWeight: '600',
-    color: COLORS.danger,
+    color: colors.danger,
+  },
+  deleteText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.textMuted,
   },
   themeRow: {
     flexDirection: 'row',
@@ -221,19 +242,19 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   themeButtonActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   themeText: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   themeTextActive: {
     color: '#FFFFFF',

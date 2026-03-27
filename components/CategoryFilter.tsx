@@ -1,5 +1,7 @@
 import { ScrollView, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { CATEGORIES, COLORS } from '../constants/colors';
+import { CATEGORIES } from '../constants/colors';
+import { useTheme } from '../hooks/useTheme';
+import { ColorScheme } from '../constants/colors';
 
 interface Props {
   selected: string | null;
@@ -7,6 +9,9 @@ interface Props {
 }
 
 export default function CategoryFilter({ selected, onSelect }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.container}>
       <TouchableOpacity
@@ -30,7 +35,7 @@ export default function CategoryFilter({ selected, onSelect }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   container: {
     marginBottom: 14,
   },
@@ -38,19 +43,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   chipActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   chipText: {
     fontSize: 13,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   chipTextActive: {
     color: '#FFFFFF',

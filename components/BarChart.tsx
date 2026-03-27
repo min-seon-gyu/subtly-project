@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
-import { COLORS } from '../constants/colors';
+import { useTheme } from '../hooks/useTheme';
+import { ColorScheme } from '../constants/colors';
+import { useCurrencyStore } from '../stores/useCurrencyStore';
 
 interface DataPoint {
   label: string;
@@ -12,12 +14,11 @@ interface Props {
   height?: number;
 }
 
-function formatPrice(price: number): string {
-  if (price >= 10000) return Math.round(price / 10000) + '만';
-  return price.toLocaleString('ko-KR');
-}
-
 export default function BarChart({ data, height = 180 }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+  const { formatPrice } = useCurrencyStore();
+
   const maxValue = Math.max(...data.map((d) => d.value), 1);
   const barWidth = 28;
   const gap = 12;
@@ -37,7 +38,7 @@ export default function BarChart({ data, height = 180 }: Props) {
                 width={barWidth}
                 height={barHeight}
                 rx={6}
-                fill={COLORS.primary}
+                fill={colors.primary}
                 opacity={0.8}
               />
             );
@@ -53,7 +54,7 @@ export default function BarChart({ data, height = 180 }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   container: {
     alignItems: 'center',
   },
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 11,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });

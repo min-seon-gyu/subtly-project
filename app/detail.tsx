@@ -2,12 +2,10 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native';
 import { useSubscriptionStore } from '../stores/useSubscriptionStore';
-import { COLORS, CATEGORIES } from '../constants/colors';
+import { useTheme } from '../hooks/useTheme';
+import { ColorScheme, CATEGORIES } from '../constants/colors';
+import { useCurrencyStore } from '../stores/useCurrencyStore';
 import dayjs from 'dayjs';
-
-function formatPrice(price: number): string {
-  return price.toLocaleString('ko-KR') + '원';
-}
 
 function getCycleLabel(cycle: string): string {
   switch (cycle) {
@@ -19,6 +17,9 @@ function getCycleLabel(cycle: string): string {
 }
 
 export default function DetailScreen() {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+  const { formatPrice } = useCurrencyStore();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { subscriptions, deleteSubscription, updateSubscription } = useSubscriptionStore();
@@ -72,11 +73,11 @@ export default function DetailScreen() {
         </View>
 
         <View style={styles.infoSection}>
-          <InfoRow label="카테고리" value={`${category?.icon ?? ''} ${category?.label ?? subscription.category}`} />
-          <InfoRow label="결제일" value={`매월 ${subscription.billingDate}일`} />
-          <InfoRow label="상태" value={subscription.isActive ? '활성' : '비활성'} />
-          <InfoRow label="등록일" value={dayjs(subscription.createdAt).format('YYYY년 M월 D일')} />
-          {subscription.memo && <InfoRow label="메모" value={subscription.memo} />}
+          <InfoRow label="카테고리" value={`${category?.icon ?? ''} ${category?.label ?? subscription.category}`} colors={colors} />
+          <InfoRow label="결제일" value={`매월 ${subscription.billingDate}일`} colors={colors} />
+          <InfoRow label="상태" value={subscription.isActive ? '활성' : '비활성'} colors={colors} />
+          <InfoRow label="등록일" value={dayjs(subscription.createdAt).format('YYYY년 M월 D일')} colors={colors} />
+          {subscription.memo && <InfoRow label="메모" value={subscription.memo} colors={colors} />}
         </View>
 
         <View style={styles.actions}>
@@ -106,7 +107,8 @@ export default function DetailScreen() {
   );
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoRow({ label, value, colors }: { label: string; value: string; colors: ColorScheme }) {
+  const styles = createStyles(colors);
   return (
     <View style={styles.infoRow}>
       <Text style={styles.infoLabel}>{label}</Text>
@@ -115,10 +117,10 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,
@@ -127,7 +129,7 @@ const styles = StyleSheet.create({
   },
   notFound: {
     fontSize: 16,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 40,
   },
@@ -149,21 +151,21 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: '800',
-    color: COLORS.text,
+    color: colors.text,
   },
   price: {
     fontSize: 32,
     fontWeight: '800',
-    color: COLORS.primary,
+    color: colors.primary,
     marginTop: 8,
   },
   cycle: {
     fontSize: 14,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 4,
   },
   infoSection: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 4,
     marginBottom: 24,
@@ -175,16 +177,16 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   infoLabel: {
     fontSize: 14,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   infoValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
   },
   actions: {
     gap: 10,
@@ -195,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   editButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
   },
   editText: {
     fontSize: 16,
@@ -203,21 +205,21 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   toggleButton: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   toggleText: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: colors.primary,
   },
   deleteButton: {
-    backgroundColor: COLORS.danger + '10',
+    backgroundColor: colors.danger + '10',
   },
   deleteText: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.danger,
+    color: colors.danger,
   },
 });

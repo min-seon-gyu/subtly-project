@@ -1,16 +1,21 @@
 import { useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useSubscriptionStore } from '../../stores/useSubscriptionStore';
 import { useAuthStore } from '../../stores/useAuthStore';
 import { useNotification } from '../../hooks/useNotification';
 import MonthlyChart from '../../components/MonthlyChart';
 import UpcomingPayments from '../../components/UpcomingPayments';
-import { COLORS } from '../../constants/colors';
+import { useTheme } from '../../hooks/useTheme';
+import { ColorScheme } from '../../constants/colors';
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const { summary, isLoading, fetchSummary } = useSubscriptionStore();
   const { nickname } = useAuthStore();
+  const router = useRouter();
   const [refreshing, setRefreshing] = React.useState(false);
 
   useNotification();
@@ -31,7 +36,7 @@ export default function HomeScreen() {
         style={styles.container}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
       >
         <Text style={styles.greeting}>
@@ -41,7 +46,7 @@ export default function HomeScreen() {
 
         {isLoading && !summary ? (
           <View style={styles.loading}>
-            <ActivityIndicator size="large" color={COLORS.primary} />
+            <ActivityIndicator size="large" color={colors.primary} />
           </View>
         ) : summary ? (
           <>
@@ -54,7 +59,11 @@ export default function HomeScreen() {
           </>
         ) : (
           <View style={styles.empty}>
+            <Text style={styles.emptyIcon}>📋</Text>
             <Text style={styles.emptyText}>구독을 등록하고 지출을 관리해보세요</Text>
+            <TouchableOpacity style={styles.emptyButton} onPress={() => router.push('/add')}>
+              <Text style={styles.emptyButtonText}>첫 구독 추가하기</Text>
+            </TouchableOpacity>
           </View>
         )}
       </ScrollView>
@@ -64,10 +73,10 @@ export default function HomeScreen() {
 
 import React from 'react';
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,
@@ -77,11 +86,11 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 24,
     fontWeight: '800',
-    color: COLORS.text,
+    color: colors.text,
   },
   subtitle: {
     fontSize: 15,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 4,
     marginBottom: 24,
   },
@@ -93,8 +102,24 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     alignItems: 'center',
   },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
   emptyText: {
     fontSize: 15,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
+    marginBottom: 20,
+  },
+  emptyButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+  },
+  emptyButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });

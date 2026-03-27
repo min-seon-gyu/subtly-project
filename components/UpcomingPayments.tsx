@@ -1,17 +1,19 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { UpcomingPayment } from '../types/subscription';
-import { COLORS } from '../constants/colors';
+import { useTheme } from '../hooks/useTheme';
+import { ColorScheme } from '../constants/colors';
+import { useCurrencyStore } from '../stores/useCurrencyStore';
 import dayjs from 'dayjs';
 
 interface Props {
   payments: UpcomingPayment[];
 }
 
-function formatPrice(price: number): string {
-  return price.toLocaleString('ko-KR') + '원';
-}
-
 export default function UpcomingPayments({ payments }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+  const { formatPrice } = useCurrencyStore();
+
   if (payments.length === 0) return null;
 
   return (
@@ -38,20 +40,20 @@ export default function UpcomingPayments({ payments }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   container: {
     marginBottom: 24,
   },
   title: {
     fontSize: 18,
     fontWeight: '700',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 14,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
@@ -68,11 +70,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 15,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
   },
   date: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   right: {
@@ -81,11 +83,11 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 15,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
   },
   daysUntil: {
     fontSize: 12,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: '600',
     marginTop: 2,
   },

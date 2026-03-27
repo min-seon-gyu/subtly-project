@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Path, G } from 'react-native-svg';
-import { COLORS, CATEGORIES } from '../constants/colors';
+import { CATEGORIES } from '../constants/colors';
+import { useTheme } from '../hooks/useTheme';
+import { ColorScheme } from '../constants/colors';
 import { Subscription } from '../types/subscription';
 
 interface Props {
@@ -20,12 +22,15 @@ function createArc(cx: number, cy: number, r: number, startAngle: number, endAng
 }
 
 export default function CategoryPieChart({ subscriptions }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   const active = subscriptions.filter((s) => s.isActive);
   const categoryTotals = CATEGORIES.map((cat, idx) => {
     const total = active
       .filter((s) => s.category === cat.value)
       .reduce((sum, s) => sum + s.price, 0);
-    return { ...cat, total, color: COLORS.categoryColors[idx] };
+    return { ...cat, total, color: colors.categoryColors[idx] };
   }).filter((c) => c.total > 0);
 
   const grandTotal = categoryTotals.reduce((sum, c) => sum + c.total, 0);
@@ -64,7 +69,7 @@ export default function CategoryPieChart({ subscriptions }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -87,11 +92,11 @@ const styles = StyleSheet.create({
   legendLabel: {
     flex: 1,
     fontSize: 13,
-    color: COLORS.text,
+    color: colors.text,
   },
   legendValue: {
     fontSize: 13,
     fontWeight: '700',
-    color: COLORS.text,
+    color: colors.text,
   },
 });

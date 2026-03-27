@@ -5,9 +5,12 @@ import { SafeAreaView } from 'react-native';
 import SubscriptionForm from '../components/SubscriptionForm';
 import { useSubscriptionStore } from '../stores/useSubscriptionStore';
 import { CreateSubscriptionRequest } from '../types/subscription';
-import { COLORS } from '../constants/colors';
+import { useTheme } from '../hooks/useTheme';
+import { ColorScheme } from '../constants/colors';
 
 export default function EditScreen() {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { subscriptions, updateSubscription } = useSubscriptionStore();
@@ -54,10 +57,10 @@ export default function EditScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,

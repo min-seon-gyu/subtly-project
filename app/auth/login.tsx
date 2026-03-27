@@ -4,10 +4,13 @@ import { SafeAreaView } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { useAuthStore } from '../../stores/useAuthStore';
-import { COLORS } from '../../constants/colors';
+import { useTheme } from '../../hooks/useTheme';
+import { ColorScheme } from '../../constants/colors';
 import { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } from '../../constants/config';
 
 export default function LoginScreen() {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const [loading, setLoading] = useState(false);
   const { kakaoLogin } = useAuthStore();
 
@@ -60,10 +63,10 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,
@@ -77,11 +80,11 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 40,
     fontWeight: '900',
-    color: COLORS.primary,
+    color: colors.primary,
   },
   subtitle: {
     fontSize: 15,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 8,
   },
   kakaoButton: {

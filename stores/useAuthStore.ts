@@ -9,6 +9,7 @@ interface AuthState {
   isLoading: boolean;
   kakaoLogin: (code: string, redirectUri: string) => Promise<void>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
   loadToken: () => Promise<void>;
   refreshToken: () => Promise<boolean>;
 }
@@ -52,6 +53,21 @@ export const useAuthStore = create<AuthState>((set) => ({
       const token = await SecureStore.getItemAsync('token');
       if (token) {
         await axios.post(`${API_BASE_URL}/api/auth/logout`, null, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+    } catch {
+      // 서버 호출 실패해도 로컬 토큰은 삭제
+    }
+    await clearTokens();
+    set({ token: null, nickname: null });
+  },
+
+  deleteAccount: async () => {
+    try {
+      const token = await SecureStore.getItemAsync('token');
+      if (token) {
+        await axios.delete(`${API_BASE_URL}/api/auth/account`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

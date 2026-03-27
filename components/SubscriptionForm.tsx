@@ -9,7 +9,9 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { COLORS, CATEGORIES } from '../constants/colors';
+import { CATEGORIES } from '../constants/colors';
+import { useTheme } from '../hooks/useTheme';
+import { ColorScheme } from '../constants/colors';
 import { BillingCycle, CreateSubscriptionRequest } from '../types/subscription';
 
 interface Props {
@@ -26,6 +28,9 @@ const CYCLES: { label: string; value: BillingCycle }[] = [
 ];
 
 export default function SubscriptionForm({ initialValues, onSubmit, onCancel, submitLabel = '추가' }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   const [name, setName] = useState(initialValues?.name ?? '');
   const [price, setPrice] = useState(initialValues?.price?.toString() ?? '');
   const [billingCycle, setBillingCycle] = useState<BillingCycle>(initialValues?.billingCycle ?? 'monthly');
@@ -34,7 +39,7 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
   const [memo, setMemo] = useState(initialValues?.memo ?? '');
 
   const selectedCategory = CATEGORIES.find((c) => c.value === category);
-  const selectedColor = COLORS.categoryColors[CATEGORIES.findIndex((c) => c.value === category)] ?? COLORS.primary;
+  const selectedColor = colors.categoryColors[CATEGORIES.findIndex((c) => c.value === category)] ?? colors.primary;
 
   const handleSubmit = () => {
     if (!name.trim() || !price.trim()) return;
@@ -64,7 +69,7 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
           value={name}
           onChangeText={setName}
           placeholder="예: Netflix, Spotify"
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={colors.textMuted}
         />
 
         <Text style={styles.label}>금액 (원)</Text>
@@ -73,7 +78,7 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
           value={price}
           onChangeText={setPrice}
           placeholder="예: 17000"
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
         />
 
@@ -98,7 +103,7 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
           value={billingDate}
           onChangeText={setBillingDate}
           placeholder="1-31"
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
         />
 
@@ -124,7 +129,7 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
           value={memo}
           onChangeText={setMemo}
           placeholder="메모를 입력하세요"
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={colors.textMuted}
           multiline
         />
 
@@ -145,25 +150,25 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   container: {
     flex: 1,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 8,
     marginTop: 16,
   },
   input: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 14,
     fontSize: 16,
-    color: COLORS.text,
+    color: colors.text,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   memoInput: {
     height: 80,
@@ -177,19 +182,19 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   cycleButtonActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   cycleText: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   cycleTextActive: {
     color: '#FFFFFF',
@@ -203,25 +208,25 @@ const styles = StyleSheet.create({
     width: '22%',
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   categoryButtonActive: {
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.primary + '10',
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + '10',
   },
   categoryIcon: {
     fontSize: 20,
   },
   categoryLabel: {
     fontSize: 11,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 4,
   },
   categoryLabelActive: {
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
   buttonRow: {
@@ -234,19 +239,19 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 16,
     borderRadius: 14,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     alignItems: 'center',
   },
   cancelText: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   submitButton: {
     flex: 2,
     paddingVertical: 16,
     borderRadius: 14,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
   },
   submitButtonDisabled: {

@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import Toast from 'react-native-toast-message';
 import { Subscription, SubscriptionSummary, CreateSubscriptionRequest, UpdateSubscriptionRequest } from '../types/subscription';
 import { api } from '../services/api';
+import { schedulePaymentReminder } from '../hooks/useNotification';
+import { useNotificationStore } from './useNotificationStore';
 
 interface SubscriptionState {
   subscriptions: Subscription[];
@@ -52,6 +54,10 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
       ]);
       set({ subscriptions, summary });
       Toast.show({ type: 'success', text1: '구독이 추가되었습니다.' });
+      const { enabled, reminderDays } = useNotificationStore.getState();
+      if (enabled && req.billingDate) {
+        schedulePaymentReminder(req.name, req.billingDate, reminderDays);
+      }
     } catch {
       Toast.show({ type: 'error', text1: '구독 추가에 실패했습니다.' });
       throw new Error('addSubscription failed');
@@ -67,6 +73,11 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
       ]);
       set({ subscriptions, summary });
       Toast.show({ type: 'success', text1: '구독이 수정되었습니다.' });
+      const { enabled, reminderDays } = useNotificationStore.getState();
+      if (enabled && req.billingDate) {
+        const sub = subscriptions.find((s) => s.id === id);
+        if (sub) schedulePaymentReminder(sub.name, req.billingDate, reminderDays);
+      }
     } catch {
       Toast.show({ type: 'error', text1: '구독 수정에 실패했습니다.' });
       throw new Error('updateSubscription failed');

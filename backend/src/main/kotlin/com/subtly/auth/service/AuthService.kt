@@ -7,6 +7,7 @@ import com.subtly.auth.entity.RefreshToken
 import com.subtly.auth.jwt.JwtTokenProvider
 import com.subtly.auth.repository.MemberRepository
 import com.subtly.auth.repository.RefreshTokenRepository
+import com.subtly.subscription.repository.SubscriptionRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -19,6 +20,7 @@ class AuthService(
     private val jwtTokenProvider: JwtTokenProvider,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val kakaoOAuthClient: KakaoOAuthClient,
+    private val subscriptionRepository: SubscriptionRepository,
 ) {
     @Transactional
     fun kakaoLogin(code: String, redirectUri: String): TokenResponse {
@@ -60,6 +62,13 @@ class AuthService(
     @Transactional
     fun logout(memberId: Long) {
         refreshTokenRepository.deleteByMemberId(memberId)
+    }
+
+    @Transactional
+    fun deleteAccount(memberId: Long) {
+        subscriptionRepository.deleteAllByMemberId(memberId)
+        refreshTokenRepository.deleteByMemberId(memberId)
+        memberRepository.deleteById(memberId)
     }
 
     private fun createTokenResponse(member: Member): TokenResponse {

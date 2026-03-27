@@ -6,10 +6,13 @@ import { useSubscriptionStore } from '../../stores/useSubscriptionStore';
 import SubscriptionCard from '../../components/SubscriptionCard';
 import SearchBar from '../../components/SearchBar';
 import CategoryFilter from '../../components/CategoryFilter';
-import { COLORS } from '../../constants/colors';
+import { useTheme } from '../../hooks/useTheme';
+import { ColorScheme } from '../../constants/colors';
 import { Subscription } from '../../types/subscription';
 
 export default function SubscriptionsScreen() {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const { subscriptions, fetchSubscriptions } = useSubscriptionStore();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
@@ -64,7 +67,7 @@ export default function SubscriptionsScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.list}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
           }
           ListEmptyComponent={
             <View style={styles.empty}>
@@ -72,6 +75,11 @@ export default function SubscriptionsScreen() {
               <Text style={styles.emptyText}>
                 {search || selectedCategory ? '검색 결과가 없습니다' : '등록된 구독이 없습니다'}
               </Text>
+              {!search && !selectedCategory && (
+                <TouchableOpacity style={styles.emptyButton} onPress={() => router.push('/add')}>
+                  <Text style={styles.emptyButtonText}>구독 추가하기</Text>
+                </TouchableOpacity>
+              )}
             </View>
           }
         />
@@ -80,10 +88,10 @@ export default function SubscriptionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorScheme) => StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,
@@ -99,10 +107,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: COLORS.text,
+    color: colors.text,
   },
   addButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 12,
@@ -125,7 +133,19 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 16,
+  },
+  emptyButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    marginTop: 20,
+  },
+  emptyButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });

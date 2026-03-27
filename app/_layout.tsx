@@ -6,15 +6,18 @@ import Toast from 'react-native-toast-message';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useThemeStore } from '../stores/useThemeStore';
 import { useCurrencyStore } from '../stores/useCurrencyStore';
-import { COLORS } from '../constants/colors';
+import { useNotificationStore } from '../stores/useNotificationStore';
+import { useTheme } from '../hooks/useTheme';
 
 // PREVIEW_MODE: true = 인증 우회, mock 데이터로 전체 화면 확인
 const PREVIEW_MODE = false;
 
 export default function RootLayout() {
+  const { colors, isDark } = useTheme();
   const { token, isLoading, loadToken } = useAuthStore();
   const { loadMode } = useThemeStore();
   const { loadCurrency } = useCurrencyStore();
+  const { load: loadNotificationSettings } = useNotificationStore();
   const segments = useSegments();
   const router = useRouter();
 
@@ -27,6 +30,7 @@ export default function RootLayout() {
     }
     loadMode();
     loadCurrency();
+    loadNotificationSettings();
   }, []);
 
   useEffect(() => {
@@ -44,19 +48,19 @@ export default function RootLayout() {
 
   if (!PREVIEW_MODE && isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
     <>
-      <StatusBar style="auto" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: COLORS.background },
-          headerTintColor: COLORS.text,
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
           headerTitleStyle: { fontWeight: '700' },
         }}
       >
