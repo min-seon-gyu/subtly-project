@@ -26,6 +26,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: '홈',
+          tabBarAccessibilityLabel: '홈 화면',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),
@@ -35,6 +36,7 @@ export default function TabLayout() {
         name="subscriptions"
         options={{
           title: '구독',
+          tabBarAccessibilityLabel: '구독 목록',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="list-outline" size={size} color={color} />
           ),
@@ -44,6 +46,7 @@ export default function TabLayout() {
         name="stats"
         options={{
           title: '통계',
+          tabBarAccessibilityLabel: '지출 통계',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="bar-chart-outline" size={size} color={color} />
           ),
@@ -53,6 +56,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: '설정',
+          tabBarAccessibilityLabel: '앱 설정',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings-outline" size={size} color={color} />
           ),

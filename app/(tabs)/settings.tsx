@@ -1,11 +1,14 @@
-import { View, Text, StyleSheet, TouchableOpacity, Switch, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, Alert, TextInput, Share } from 'react-native';
+import { SafeAreaView, ScrollView } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 import { ColorScheme } from '../../constants/colors';
 import { useAuthStore } from '../../stores/useAuthStore';
 import { useThemeStore } from '../../stores/useThemeStore';
 import { useCurrencyStore, CURRENCIES } from '../../stores/useCurrencyStore';
 import { useNotificationStore } from '../../stores/useNotificationStore';
+import { useBudgetStore } from '../../stores/useBudgetStore';
+import { useSubscriptionStore } from '../../stores/useSubscriptionStore';
 
 const THEME_OPTIONS = [
   { label: '시스템', value: 'system' as const },
@@ -16,10 +19,13 @@ const THEME_OPTIONS = [
 export default function SettingsScreen() {
   const { colors } = useTheme();
   const styles = createStyles(colors);
-  const { enabled: notificationEnabled, reminderDays, setEnabled: setNotificationEnabled, setReminderDays } = useNotificationStore();
+  const { enabled: notificationEnabled, reminderDays, reminderHour, setEnabled: setNotificationEnabled, setReminderDays, setReminderHour } = useNotificationStore();
   const { nickname, logout, deleteAccount } = useAuthStore();
   const { mode, setMode } = useThemeStore();
   const { currency, setCurrency } = useCurrencyStore();
+  const { monthlyBudget, setBudget } = useBudgetStore();
+  const { subscriptions } = useSubscriptionStore();
+  const [budgetInput, setBudgetInput] = useState(monthlyBudget?.toString() ?? '');
 
   const handleLogout = () => {
     Alert.alert('로그아웃', '정말 로그아웃 하시겠습니까?', [
@@ -39,9 +45,36 @@ export default function SettingsScreen() {
     );
   };
 
+  const handleExportCSV = async () => {
+    if (subscriptions.length === 0) {
+      Alert.alert('내보내기', '내보낼 구독 데이터가 없습니다.');
+      return;
+    }
+    const header = '서비스명,금액,결제주기,결제일,카테고리,상태,결제수단,시작일,종료일,메모';
+    const rows = subscriptions.map((s) =>
+      [s.name, s.price, s.billingCycle, s.billingDate, s.category, s.isActive ? '활성' : '비활성', s.paymentMethod ?? '', s.startDate ?? '', s.endDate ?? '', s.memo ?? ''].join(',')
+    );
+    const csv = [header, ...rows].join('\n');
+    try {
+      await Share.share({ message: csv, title: 'Subtly 구독 데이터' });
+    } catch {
+      Alert.alert('내보내기 실패', '데이터를 내보낼 수 없습니다.');
+    }
+  };
+
+  const handleBudgetSave = () => {
+    const value = parseInt(budgetInput, 10);
+    if (!budgetInput.trim() || isNaN(value) || value <= 0) {
+      setBudget(null);
+      setBudgetInput('');
+    } else {
+      setBudget(value);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>설정</Text>
 
         <View style={styles.section}>
@@ -73,6 +106,27 @@ export default function SettingsScreen() {
               <TouchableOpacity
                 style={styles.stepperButton}
                 onPress={() => setReminderDays(Math.min(7, reminderDays + 1))}
+              >
+                <Text style={styles.stepperText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={styles.rowInfo}>
+              <Text style={styles.rowLabel}>알림 시간</Text>
+              <Text style={styles.rowSub}>매일 {reminderHour}시에 알림</Text>
+            </View>
+            <View style={styles.stepper}>
+              <TouchableOpacity
+                style={styles.stepperButton}
+                onPress={() => setReminderHour(Math.max(6, reminderHour - 1))}
+              >
+                <Text style={styles.stepperText}>-</Text>
+              </TouchableOpacity>
+              <Text style={styles.stepperValue}>{reminderHour}시</Text>
+              <TouchableOpacity
+                style={styles.stepperButton}
+                onPress={() => setReminderHour(Math.min(22, reminderHour + 1))}
               >
                 <Text style={styles.stepperText}>+</Text>
               </TouchableOpacity>
@@ -115,6 +169,30 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>예산</Text>
+          <View style={styles.row}>
+            <View style={styles.rowInfo}>
+              <Text style={styles.rowLabel}>월 예산</Text>
+              <Text style={styles.rowSub}>설정하면 홈 화면에 진행률이 표시됩니다</Text>
+            </View>
+          </View>
+          <View style={styles.budgetRow}>
+            <TextInput
+              style={styles.budgetInput}
+              value={budgetInput}
+              onChangeText={setBudgetInput}
+              placeholder="예: 100000"
+              placeholderTextColor={colors.textMuted}
+              keyboardType="numeric"
+              onBlur={handleBudgetSave}
+            />
+            <TouchableOpacity style={styles.budgetSaveButton} onPress={handleBudgetSave}>
+              <Text style={styles.budgetSaveText}>{monthlyBudget ? '변경' : '설정'}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>계정</Text>
           <View style={styles.row}>
             <Text style={styles.rowLabel}>닉네임</Text>
@@ -129,13 +207,20 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>데이터</Text>
+          <TouchableOpacity style={styles.logoutRow} onPress={handleExportCSV}>
+            <Text style={[styles.rowLabel, { color: colors.primary }]}>구독 데이터 내보내기 (CSV)</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>정보</Text>
           <View style={styles.row}>
             <Text style={styles.rowLabel}>버전</Text>
             <Text style={styles.rowValue}>1.0.0</Text>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -233,6 +318,31 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: colors.textMuted,
+  },
+  budgetRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  budgetInput: {
+    flex: 1,
+    backgroundColor: colors.surface,
+    borderRadius: 14,
+    padding: 14,
+    fontSize: 15,
+    color: colors.text,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  budgetSaveButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 14,
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+  },
+  budgetSaveText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   themeRow: {
     flexDirection: 'row',

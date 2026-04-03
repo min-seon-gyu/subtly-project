@@ -53,12 +53,12 @@ export interface ColorScheme {
 }
 
 export const CATEGORIES = [
-  { label: '영상', value: 'video', icon: '🎬' },
-  { label: '음악', value: 'music', icon: '🎵' },
-  { label: '게임', value: 'game', icon: '🎮' },
-  { label: '클라우드', value: 'cloud', icon: '☁️' },
-  { label: '생산성', value: 'productivity', icon: '📋' },
-  { label: '뉴스/읽기', value: 'news', icon: '📰' },
-  { label: '건강/운동', value: 'health', icon: '💪' },
-  { label: '기타', value: 'other', icon: '📦' },
+  { label: '영상', value: 'video', icon: 'V' },
+  { label: '음악', value: 'music', icon: 'M' },
+  { label: '게임', value: 'game', icon: 'G' },
+  { label: '클라우드', value: 'cloud', icon: 'C' },
+  { label: '생산성', value: 'productivity', icon: 'P' },
+  { label: '뉴스/읽기', value: 'news', icon: 'N' },
+  { label: '건강/운동', value: 'health', icon: 'H' },
+  { label: '기타', value: 'other', icon: 'E' },
 ] as const;

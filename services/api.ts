@@ -57,12 +57,12 @@ client.interceptors.response.use(
 const PREVIEW_MODE = false;
 
 const mockData: Subscription[] = [
-  { id: '1', name: 'Netflix', price: 17000, billingCycle: 'monthly', billingDate: 15, category: 'video', color: '#E50914', icon: '🎬', isActive: true, createdAt: '2024-01-01', updatedAt: '2024-01-01' },
-  { id: '2', name: 'YouTube Premium', price: 14900, billingCycle: 'monthly', billingDate: 20, category: 'video', color: '#FF0000', icon: '▶️', isActive: true, createdAt: '2024-02-01', updatedAt: '2024-02-01' },
-  { id: '3', name: 'Spotify', price: 10900, billingCycle: 'monthly', billingDate: 5, category: 'music', color: '#1DB954', icon: '🎵', isActive: true, createdAt: '2024-03-01', updatedAt: '2024-03-01' },
-  { id: '4', name: 'ChatGPT Plus', price: 30000, billingCycle: 'monthly', billingDate: 10, category: 'productivity', color: '#10A37F', icon: '🤖', isActive: true, createdAt: '2024-04-01', updatedAt: '2024-04-01' },
-  { id: '5', name: 'iCloud+', price: 1100, billingCycle: 'monthly', billingDate: 25, category: 'cloud', color: '#3693F5', icon: '☁️', isActive: true, createdAt: '2024-05-01', updatedAt: '2024-05-01' },
-  { id: '6', name: 'Disney+', price: 9900, billingCycle: 'monthly', billingDate: 1, category: 'video', color: '#113CCF', icon: '🏰', isActive: false, createdAt: '2024-06-01', updatedAt: '2024-06-01' },
+  { id: '1', name: 'Netflix', price: 17000, billingCycle: 'monthly', billingDate: 15, category: 'video', color: '#E50914', icon: 'N', isActive: true, createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+  { id: '2', name: 'YouTube Premium', price: 14900, billingCycle: 'monthly', billingDate: 20, category: 'video', color: '#FF0000', icon: 'YT', isActive: true, createdAt: '2024-02-01', updatedAt: '2024-02-01' },
+  { id: '3', name: 'Spotify', price: 10900, billingCycle: 'monthly', billingDate: 5, category: 'music', color: '#1DB954', icon: 'S', isActive: true, createdAt: '2024-03-01', updatedAt: '2024-03-01' },
+  { id: '4', name: 'ChatGPT Plus', price: 30000, billingCycle: 'monthly', billingDate: 10, category: 'productivity', color: '#10A37F', icon: 'GP', isActive: true, createdAt: '2024-04-01', updatedAt: '2024-04-01' },
+  { id: '5', name: 'iCloud+', price: 1100, billingCycle: 'monthly', billingDate: 25, category: 'cloud', color: '#3693F5', icon: 'iC', isActive: true, createdAt: '2024-05-01', updatedAt: '2024-05-01' },
+  { id: '6', name: 'Disney+', price: 9900, billingCycle: 'monthly', billingDate: 1, category: 'video', color: '#113CCF', icon: 'D+', isActive: false, createdAt: '2024-06-01', updatedAt: '2024-06-01' },
 ];
 
 function getMockSummary(subs: Subscription[]): SubscriptionSummary {
@@ -136,6 +136,10 @@ function mapSubscription(data: any): Subscription {
     icon: data.icon,
     memo: data.memo,
     isActive: data.isActive,
+    pausedUntil: data.pausedUntil,
+    startDate: data.startDate,
+    endDate: data.endDate,
+    paymentMethod: data.paymentMethod,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   };

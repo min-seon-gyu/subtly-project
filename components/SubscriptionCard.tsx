@@ -31,6 +31,9 @@ export default function SubscriptionCard({ subscription, onPress }: Props) {
       style={styles.card}
       onPress={() => onPress(subscription)}
       activeOpacity={0.7}
+      accessible={true}
+      accessibilityLabel={`${subscription.name}, ${getCycleLabel(subscription.billingCycle)} ${subscription.price}원`}
+      accessibilityRole="button"
     >
       <View style={[styles.iconContainer, { backgroundColor: subscription.color + '20' }]}>
         <Text style={styles.icon}>{subscription.icon}</Text>
@@ -69,7 +72,9 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    fontSize: 24,
+    fontSize: 16,
+    fontWeight: '800',
+    color: colors.text,
   },
   info: {
     flex: 1,

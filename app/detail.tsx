@@ -56,8 +56,35 @@ export default function DetailScreen() {
     );
   };
 
-  const handleToggleActive = async () => {
-    await updateSubscription(subscription.id, { isActive: !subscription.isActive });
+  const handleToggleActive = () => {
+    if (subscription.isActive) {
+      Alert.alert(
+        '구독 일시정지',
+        '일시정지 기간을 선택해주세요',
+        [
+          { text: '취소', style: 'cancel' },
+          {
+            text: '1개월',
+            onPress: () => pauseFor(1),
+          },
+          {
+            text: '3개월',
+            onPress: () => pauseFor(3),
+          },
+          {
+            text: '기한 없이',
+            onPress: () => updateSubscription(subscription.id, { isActive: false, pausedUntil: null }),
+          },
+        ],
+      );
+    } else {
+      updateSubscription(subscription.id, { isActive: true, pausedUntil: null });
+    }
+  };
+
+  const pauseFor = (months: number) => {
+    const until = dayjs().add(months, 'month').format('YYYY-MM-DD');
+    updateSubscription(subscription.id, { isActive: false, pausedUntil: until });
   };
 
   return (
@@ -73,9 +100,22 @@ export default function DetailScreen() {
         </View>
 
         <View style={styles.infoSection}>
-          <InfoRow label="카테고리" value={`${category?.icon ?? ''} ${category?.label ?? subscription.category}`} colors={colors} />
+          <InfoRow label="카테고리" value={category?.label ?? subscription.category} colors={colors} />
           <InfoRow label="결제일" value={`매월 ${subscription.billingDate}일`} colors={colors} />
-          <InfoRow label="상태" value={subscription.isActive ? '활성' : '비활성'} colors={colors} />
+          <InfoRow
+            label="상태"
+            value={
+              subscription.isActive
+                ? '활성'
+                : subscription.pausedUntil
+                  ? `일시정지 (${dayjs(subscription.pausedUntil).format('M월 D일')}까지)`
+                  : '일시정지'
+            }
+            colors={colors}
+          />
+          {subscription.paymentMethod && <InfoRow label="결제 수단" value={subscription.paymentMethod} colors={colors} />}
+          {subscription.startDate && <InfoRow label="구독 시작일" value={dayjs(subscription.startDate).format('YYYY년 M월 D일')} colors={colors} />}
+          {subscription.endDate && <InfoRow label="약정 종료일" value={dayjs(subscription.endDate).format('YYYY년 M월 D일')} colors={colors} />}
           <InfoRow label="등록일" value={dayjs(subscription.createdAt).format('YYYY년 M월 D일')} colors={colors} />
           {subscription.memo && <InfoRow label="메모" value={subscription.memo} colors={colors} />}
         </View>
@@ -146,7 +186,9 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     marginBottom: 16,
   },
   icon: {
-    fontSize: 36,
+    fontSize: 24,
+    fontWeight: '800',
+    color: colors.text,
   },
   name: {
     fontSize: 24,

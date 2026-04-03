@@ -37,25 +37,38 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
   const [billingDate, setBillingDate] = useState(initialValues?.billingDate?.toString() ?? '1');
   const [category, setCategory] = useState(initialValues?.category ?? 'other');
   const [memo, setMemo] = useState(initialValues?.memo ?? '');
+  const [startDate, setStartDate] = useState(initialValues?.startDate ?? '');
+  const [endDate, setEndDate] = useState(initialValues?.endDate ?? '');
+  const [paymentMethod, setPaymentMethod] = useState(initialValues?.paymentMethod ?? '');
 
   const selectedCategory = CATEGORIES.find((c) => c.value === category);
-  const selectedColor = colors.categoryColors[CATEGORIES.findIndex((c) => c.value === category)] ?? colors.primary;
+  const categoryColor = colors.categoryColors[CATEGORIES.findIndex((c) => c.value === category)] ?? colors.primary;
+
+  const parsedPrice = parseInt(price, 10);
+  const parsedDate = parseInt(billingDate, 10);
+
+  const nameError = name.trim().length === 0 ? '서비스명을 입력해주세요' : null;
+  const priceError = !price.trim() ? '금액을 입력해주세요' : isNaN(parsedPrice) || parsedPrice <= 0 ? '올바른 금액을 입력해주세요' : null;
+  const dateError = isNaN(parsedDate) || parsedDate < 1 || parsedDate > 31 ? '1~31 사이의 결제일을 입력해주세요' : null;
 
   const handleSubmit = () => {
-    if (!name.trim() || !price.trim()) return;
+    if (nameError || priceError || dateError) return;
     onSubmit({
       name: name.trim(),
-      price: parseInt(price, 10),
+      price: parsedPrice,
       billingCycle,
-      billingDate: parseInt(billingDate, 10) || 1,
+      billingDate: parsedDate,
       category,
-      color: selectedColor,
-      icon: selectedCategory?.icon ?? '📦',
+      color: initialValues?.color ?? categoryColor,
+      icon: initialValues?.icon ?? selectedCategory?.icon ?? 'E',
       memo: memo.trim() || undefined,
+      startDate: startDate.trim() || undefined,
+      endDate: endDate.trim() || undefined,
+      paymentMethod: paymentMethod.trim() || undefined,
     });
   };
 
-  const isValid = name.trim().length > 0 && price.trim().length > 0;
+  const isValid = !nameError && !priceError && !dateError;
 
   return (
     <KeyboardAvoidingView
@@ -65,7 +78,7 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.label}>서비스명</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, name.length > 0 && nameError && styles.inputError]}
           value={name}
           onChangeText={setName}
           placeholder="예: Netflix, Spotify"
@@ -74,13 +87,14 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
 
         <Text style={styles.label}>금액 (원)</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, price.length > 0 && priceError && styles.inputError]}
           value={price}
           onChangeText={setPrice}
           placeholder="예: 17000"
           placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
         />
+        {price.length > 0 && priceError && <Text style={styles.errorText}>{priceError}</Text>}
 
         <Text style={styles.label}>결제 주기</Text>
         <View style={styles.cycleRow}>
@@ -99,13 +113,14 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
 
         <Text style={styles.label}>결제일</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, billingDate.length > 0 && dateError && styles.inputError]}
           value={billingDate}
           onChangeText={setBillingDate}
           placeholder="1-31"
           placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
         />
+        {billingDate.length > 0 && dateError && <Text style={styles.errorText}>{dateError}</Text>}
 
         <Text style={styles.label}>카테고리</Text>
         <View style={styles.categoryGrid}>
@@ -122,6 +137,33 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
             </TouchableOpacity>
           ))}
         </View>
+
+        <Text style={styles.label}>결제 수단 (선택)</Text>
+        <TextInput
+          style={styles.input}
+          value={paymentMethod}
+          onChangeText={setPaymentMethod}
+          placeholder="예: 신한카드, 국민카드"
+          placeholderTextColor={colors.textMuted}
+        />
+
+        <Text style={styles.label}>구독 시작일 (선택)</Text>
+        <TextInput
+          style={styles.input}
+          value={startDate}
+          onChangeText={setStartDate}
+          placeholder="YYYY-MM-DD"
+          placeholderTextColor={colors.textMuted}
+        />
+
+        <Text style={styles.label}>약정 종료일 (선택)</Text>
+        <TextInput
+          style={styles.input}
+          value={endDate}
+          onChangeText={setEndDate}
+          placeholder="YYYY-MM-DD"
+          placeholderTextColor={colors.textMuted}
+        />
 
         <Text style={styles.label}>메모 (선택)</Text>
         <TextInput
@@ -169,6 +211,14 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     color: colors.text,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  inputError: {
+    borderColor: colors.danger,
+  },
+  errorText: {
+    fontSize: 12,
+    color: colors.danger,
+    marginTop: 4,
   },
   memoInput: {
     height: 80,
@@ -218,7 +268,9 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     backgroundColor: colors.primary + '10',
   },
   categoryIcon: {
-    fontSize: 20,
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.primary,
   },
   categoryLabel: {
     fontSize: 11,

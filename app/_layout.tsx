@@ -7,6 +7,7 @@ import { useAuthStore } from '../stores/useAuthStore';
 import { useThemeStore } from '../stores/useThemeStore';
 import { useCurrencyStore } from '../stores/useCurrencyStore';
 import { useNotificationStore } from '../stores/useNotificationStore';
+import { useBudgetStore } from '../stores/useBudgetStore';
 import { useTheme } from '../hooks/useTheme';
 
 // PREVIEW_MODE: true = 인증 우회, mock 데이터로 전체 화면 확인
@@ -18,6 +19,7 @@ export default function RootLayout() {
   const { loadMode } = useThemeStore();
   const { loadCurrency } = useCurrencyStore();
   const { load: loadNotificationSettings } = useNotificationStore();
+  const { load: loadBudget } = useBudgetStore();
   const segments = useSegments();
   const router = useRouter();
 
@@ -31,6 +33,7 @@ export default function RootLayout() {
     loadMode();
     loadCurrency();
     loadNotificationSettings();
+    loadBudget();
   }, []);
 
   useEffect(() => {

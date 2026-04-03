@@ -86,6 +86,54 @@ export default function StatsScreen() {
             <Text style={styles.summaryValue}>{active.length}개</Text>
           </View>
         </View>
+
+        {monthlyData.length >= 2 && monthlyData[monthlyData.length - 2].value > 0 && (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>지난달 비교</Text>
+            {(() => {
+              const lastMonth = monthlyData[monthlyData.length - 2].value;
+              const diff = totalMonthly - lastMonth;
+              const percent = Math.round((diff / lastMonth) * 100);
+              const isUp = diff > 0;
+              return (
+                <>
+                  <View style={styles.summaryRow}>
+                    <Text style={styles.summaryLabel}>지난달</Text>
+                    <Text style={styles.summaryValue}>{formatPrice(lastMonth)}</Text>
+                  </View>
+                  <View style={styles.summaryRow}>
+                    <Text style={styles.summaryLabel}>이번달</Text>
+                    <Text style={styles.summaryValue}>{formatPrice(totalMonthly)}</Text>
+                  </View>
+                  <View style={[styles.summaryRow, { borderBottomWidth: 0 }]}>
+                    <Text style={styles.summaryLabel}>변동</Text>
+                    <Text style={[styles.summaryValue, { color: isUp ? colors.danger : colors.success }]}>
+                      {isUp ? '+' : ''}{formatPrice(diff)} ({isUp ? '+' : ''}{percent}%)
+                    </Text>
+                  </View>
+                </>
+              );
+            })()}
+          </View>
+        )}
+
+        {active.length > 0 && (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>비용 TOP {Math.min(5, active.length)}</Text>
+            {[...active]
+              .sort((a, b) => b.price - a.price)
+              .slice(0, 5)
+              .map((sub, i) => (
+                <View key={sub.id} style={[styles.summaryRow, i === Math.min(4, active.length - 1) && { borderBottomWidth: 0 }]}>
+                  <View style={styles.rankRow}>
+                    <Text style={styles.rankNumber}>{i + 1}</Text>
+                    <Text style={styles.summaryLabel}>{sub.name}</Text>
+                  </View>
+                  <Text style={styles.summaryValue}>{formatPrice(sub.price)}</Text>
+                </View>
+              ))}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -129,6 +177,17 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     color: colors.textMuted,
     textAlign: 'center',
     paddingVertical: 20,
+  },
+  rankRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  rankNumber: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: colors.primary,
+    width: 20,
   },
   summaryRow: {
     flexDirection: 'row',

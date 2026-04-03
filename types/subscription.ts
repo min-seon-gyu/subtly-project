@@ -11,6 +11,10 @@ export interface Subscription {
   icon: string;
   memo?: string;
   isActive: boolean;
+  pausedUntil?: string;
+  startDate?: string;   // 구독 시작일
+  endDate?: string;     // 약정 종료일
+  paymentMethod?: string; // 결제 수단 (예: 신한카드, 국민카드)
   createdAt: string;
   updatedAt: string;
 }
@@ -37,8 +41,12 @@ export interface CreateSubscriptionRequest {
   color: string;
   icon: string;
   memo?: string;
+  startDate?: string;
+  endDate?: string;
+  paymentMethod?: string;
 }
 
 export type UpdateSubscriptionRequest = Partial<CreateSubscriptionRequest> & {
   isActive?: boolean;
+  pausedUntil?: string | null;
 };

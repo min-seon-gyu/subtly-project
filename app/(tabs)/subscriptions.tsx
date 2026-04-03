@@ -13,7 +13,7 @@ import { Subscription } from '../../types/subscription';
 export default function SubscriptionsScreen() {
   const { colors } = useTheme();
   const styles = createStyles(colors);
-  const { subscriptions, fetchSubscriptions } = useSubscriptionStore();
+  const { subscriptions, error, fetchSubscriptions } = useSubscriptionStore();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
@@ -71,15 +71,18 @@ export default function SubscriptionsScreen() {
           }
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyIcon}>{search || selectedCategory ? '🔍' : '📭'}</Text>
               <Text style={styles.emptyText}>
-                {search || selectedCategory ? '검색 결과가 없습니다' : '등록된 구독이 없습니다'}
+                {error ? error : search || selectedCategory ? '검색 결과가 없습니다' : '등록된 구독이 없습니다'}
               </Text>
-              {!search && !selectedCategory && (
+              {error ? (
+                <TouchableOpacity style={styles.emptyButton} onPress={fetchSubscriptions}>
+                  <Text style={styles.emptyButtonText}>다시 시도</Text>
+                </TouchableOpacity>
+              ) : !search && !selectedCategory ? (
                 <TouchableOpacity style={styles.emptyButton} onPress={() => router.push('/add')}>
                   <Text style={styles.emptyButtonText}>구독 추가하기</Text>
                 </TouchableOpacity>
-              )}
+              ) : null}
             </View>
           }
         />
@@ -126,9 +129,6 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
   empty: {
     alignItems: 'center',
     paddingTop: 60,
-  },
-  emptyIcon: {
-    fontSize: 48,
   },
   emptyText: {
     fontSize: 16,
