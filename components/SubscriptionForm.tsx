@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   View,
   Text,
   TextInput,
   ActivityIndicator,
+  type TextInput as TextInputType,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
@@ -34,6 +35,8 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
   const { colors } = useTheme();
   const styles = createStyles(colors);
 
+  const priceRef = useRef<TextInputType>(null);
+  const billingDateRef = useRef<TextInputType>(null);
   const [name, setName] = useState(initialValues?.name ?? '');
   const [price, setPrice] = useState(initialValues?.price?.toString() ?? '');
   const [billingCycle, setBillingCycle] = useState<BillingCycle>(initialValues?.billingCycle ?? 'monthly');
@@ -86,16 +89,22 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
           onChangeText={setName}
           placeholder="예: Netflix, Spotify"
           placeholderTextColor={colors.textMuted}
+          autoFocus={!initialValues?.name}
+          returnKeyType="next"
+          onSubmitEditing={() => priceRef.current?.focus()}
         />
 
         <Text style={styles.label}>금액 (원)</Text>
         <TextInput
+          ref={priceRef}
           style={[styles.input, price.length > 0 && priceError && styles.inputError]}
           value={price}
           onChangeText={setPrice}
           placeholder="예: 17000"
           placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
+          returnKeyType="next"
+          onSubmitEditing={() => billingDateRef.current?.focus()}
         />
         {price.length > 0 && priceError && <Text style={styles.errorText}>{priceError}</Text>}
 
@@ -116,12 +125,14 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
 
         <Text style={styles.label}>결제일</Text>
         <TextInput
+          ref={billingDateRef}
           style={[styles.input, billingDate.length > 0 && dateError && styles.inputError]}
           value={billingDate}
           onChangeText={setBillingDate}
           placeholder="1-31"
           placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
+          returnKeyType="done"
         />
         {billingDate.length > 0 && dateError && <Text style={styles.errorText}>{dateError}</Text>}
 

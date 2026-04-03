@@ -2,6 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { ColorScheme } from '../constants/colors';
 import { useCurrencyStore } from '../stores/useCurrencyStore';
+import CountUp from './CountUp';
 
 interface Props {
   totalMonthly: number;
@@ -17,11 +18,11 @@ export default function MonthlyChart({ totalMonthly, totalYearly, activeCount }:
   return (
     <View style={styles.container}>
       <Text style={styles.label}>이번 달 구독료</Text>
-      <Text style={styles.totalPrice}>{formatPrice(totalMonthly)}원</Text>
+      <CountUp value={totalMonthly} format={formatPrice} style={styles.totalPrice} />
       <View style={styles.subInfoRow}>
         <View style={styles.subInfo}>
           <Text style={styles.subLabel}>연간 예상</Text>
-          <Text style={styles.subValue}>{formatPrice(totalYearly)}원</Text>
+          <CountUp value={totalYearly} format={formatPrice} style={styles.subValue} />
         </View>
         <View style={styles.divider} />
         <View style={styles.subInfo}>

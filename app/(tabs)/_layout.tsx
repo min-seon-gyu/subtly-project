@@ -1,9 +1,12 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../hooks/useTheme';
+import { useSubscriptionStore } from '../../stores/useSubscriptionStore';
 
 export default function TabLayout() {
   const { colors } = useTheme();
+  const summary = useSubscriptionStore((s) => s.summary);
+  const upcomingCount = summary?.upcomingPayments.filter((p) => p.daysUntil <= 3).length ?? 0;
 
   return (
     <Tabs
@@ -27,6 +30,8 @@ export default function TabLayout() {
         options={{
           title: '홈',
           tabBarAccessibilityLabel: '홈 화면',
+          tabBarBadge: upcomingCount > 0 ? upcomingCount : undefined,
+          tabBarBadgeStyle: { backgroundColor: colors.danger, fontSize: 10 },
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),

@@ -11,6 +11,8 @@ import { useTheme } from '../../hooks/useTheme';
 import { ColorScheme } from '../../constants/colors';
 import { useBudgetStore } from '../../stores/useBudgetStore';
 import { useCurrencyStore } from '../../stores/useCurrencyStore';
+import { SkeletonBox } from '../../components/Skeleton';
+import PressableScale from '../../components/PressableScale';
 
 export default function HomeScreen() {
   const { colors } = useTheme();
@@ -50,7 +52,10 @@ export default function HomeScreen() {
 
         {isLoading && !summary ? (
           <View style={styles.loading}>
-            <ActivityIndicator size="large" color={colors.primary} />
+            <SkeletonBox width="100%" height={160} borderRadius={20} />
+            <SkeletonBox width="100%" height={100} borderRadius={16} style={{ marginTop: 16 }} />
+            <SkeletonBox width="100%" height={60} borderRadius={12} style={{ marginTop: 12 }} />
+            <SkeletonBox width="100%" height={60} borderRadius={12} style={{ marginTop: 8 }} />
           </View>
         ) : error && !summary ? (
           <View style={styles.empty}>
@@ -96,10 +101,11 @@ export default function HomeScreen() {
           </>
         ) : (
           <View style={styles.empty}>
-            <Text style={styles.emptyText}>구독을 등록하고 지출을 관리해보세요</Text>
-            <TouchableOpacity style={styles.emptyButton} onPress={() => router.push('/add')}>
+            <Text style={styles.emptyTitle}>아직 등록된 구독이 없어요</Text>
+            <Text style={styles.emptyText}>자주 사용하는 구독 서비스를 추가하면{'\n'}매달 얼마를 쓰고 있는지 확인할 수 있어요</Text>
+            <PressableScale onPress={() => router.push('/add')} style={styles.emptyButton}>
               <Text style={styles.emptyButtonText}>첫 구독 추가하기</Text>
-            </TouchableOpacity>
+            </PressableScale>
           </View>
         )}
       </ScrollView>
@@ -174,10 +180,18 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     marginTop: 6,
     textAlign: 'right',
   },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
+  },
   emptyText: {
-    fontSize: 15,
+    fontSize: 14,
     color: colors.textSecondary,
-    marginBottom: 20,
+    marginTop: 8,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 24,
   },
   emptyButton: {
     backgroundColor: colors.primary,

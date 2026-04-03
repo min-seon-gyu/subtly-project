@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, Text } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import Toast from 'react-native-toast-message';
 import { useAuthStore } from '../stores/useAuthStore';
@@ -77,7 +77,21 @@ export default function RootLayout() {
         <Stack.Screen name="edit" options={{ title: '구독 수정' }} />
         <Stack.Screen name="detail" options={{ title: '구독 상세' }} />
       </Stack>
-      <Toast />
+      <Toast
+        config={{
+          success: ({ text1 }) => (
+            <View style={{ backgroundColor: colors.success, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, marginHorizontal: 20, marginTop: 10 }}>
+              <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '600' }}>{text1}</Text>
+            </View>
+          ),
+          error: ({ text1, text2 }) => (
+            <View style={{ backgroundColor: colors.danger, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 20, marginHorizontal: 20, marginTop: 10 }}>
+              <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '600' }}>{text1}</Text>
+              {text2 ? <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, marginTop: 2 }}>{text2}</Text> : null}
+            </View>
+          ),
+        }}
+      />
     </>
   );
 }
