@@ -3,7 +3,7 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: 'Subtly',
-  slug: 'Subtly',
+  slug: 'subtly',
   scheme: 'subtly',
   version: '1.0.0',
   orientation: 'portrait',
@@ -46,5 +46,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     apiBaseUrl: process.env.API_BASE_URL ?? 'http://localhost:8080',
     kakaoRestApiKey: process.env.KAKAO_REST_API_KEY ?? '',
+    eas: {
+      projectId: '38059196-2887-4a86-aefc-28abcc962915',
+    },
   },
+  owner: 'seongyumin',
 });
