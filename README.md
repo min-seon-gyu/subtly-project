@@ -24,6 +24,8 @@ Subtly는 넷플릭스, 유튜브 프리미엄, ChatGPT 등 흩어진 구독 서
 
 ### 2. 홈 (대시보드)
 
+<img src="docs/screenshots/01_home.png" width="300" />
+
 앱을 열면 가장 먼저 보이는 화면입니다. 핵심 정보를 한눈에 확인할 수 있습니다.
 
 - **이번 달 구독료** — 총 월간 지출, 연간 예상 금액, 활성 구독 수 (카운트업 애니메이션)
@@ -41,6 +43,8 @@ Subtly는 넷플릭스, 유튜브 프리미엄, ChatGPT 등 흩어진 구독 서
 
 ### 3. 구독 목록
 
+<img src="docs/screenshots/02_subscriptions.png" width="300" />
+
 등록한 전체 구독을 관리하는 화면입니다.
 
 - **검색** — 서비스명으로 실시간 검색
@@ -54,6 +58,8 @@ Subtly는 넷플릭스, 유튜브 프리미엄, ChatGPT 등 흩어진 구독 서
 ---
 
 ### 4. 구독 추가
+
+<img src="docs/screenshots/05_add.png" width="300" />
 
 새로운 구독을 등록하는 화면입니다. 프리셋과 직접 입력 두 가지 방식을 지원합니다.
 
@@ -78,6 +84,8 @@ Subtly는 넷플릭스, 유튜브 프리미엄, ChatGPT 등 흩어진 구독 서
 
 ### 5. 구독 상세
 
+<img src="docs/screenshots/06_detail.png" width="300" />
+
 개별 구독의 상세 정보를 확인하고 관리합니다.
 
 - **헤더** — 이니셜 아이콘 (서비스 브랜드 컬러 배경), 서비스명, 금액 (통화별 표시), 결제 주기
@@ -91,6 +99,8 @@ Subtly는 넷플릭스, 유튜브 프리미엄, ChatGPT 등 흩어진 구독 서
 
 ### 6. 통계
 
+<img src="docs/screenshots/03_stats.png" width="300" />
+
 구독 지출 현황을 시각적으로 분석합니다.
 
 - **월별 지출 추이** — 최근 6개월 바 차트
@@ -102,6 +112,8 @@ Subtly는 넷플릭스, 유튜브 프리미엄, ChatGPT 등 흩어진 구독 서
 ---
 
 ### 7. 설정
+
+<img src="docs/screenshots/04_settings.png" width="300" />
 
 앱의 전반적인 설정을 관리합니다.
 
