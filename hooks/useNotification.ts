@@ -74,6 +74,36 @@ export async function schedulePaymentReminder(
   });
 }
 
+export async function scheduleEndDateReminder(
+  subscriptionName: string,
+  endDate: string,
+  hour: number = 9,
+) {
+  const now = new Date();
+  const end = new Date(endDate);
+  if (isNaN(end.getTime())) return;
+
+  // 7일 전, 3일 전, 당일 알림
+  const reminders = [
+    { daysBefore: 7, title: '약정 종료 예정', body: `${subscriptionName} 약정이 7일 후 종료됩니다. 갱신 여부를 확인하세요.` },
+    { daysBefore: 3, title: '약정 종료 임박', body: `${subscriptionName} 약정이 3일 후 종료됩니다.` },
+    { daysBefore: 0, title: '약정 종료일', body: `${subscriptionName} 약정이 오늘 종료됩니다.` },
+  ];
+
+  for (const r of reminders) {
+    const reminderDate = new Date(end);
+    reminderDate.setDate(reminderDate.getDate() - r.daysBefore);
+    reminderDate.setHours(hour, 0, 0, 0);
+
+    if (reminderDate <= now) continue;
+
+    await Notifications.scheduleNotificationAsync({
+      content: { title: r.title, body: r.body },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: reminderDate },
+    });
+  }
+}
+
 export async function rescheduleAllNotifications() {
   await Notifications.cancelAllScheduledNotificationsAsync();
 
@@ -85,6 +115,13 @@ export async function rescheduleAllNotifications() {
 
   for (const sub of active) {
     await schedulePaymentReminder(sub.name, sub.billingDate, reminderDays, reminderHour);
+  }
+
+  // 약정 종료 알림 (활성/비활성 모두 — 비활성도 약정은 남아있을 수 있음)
+  for (const sub of subscriptions) {
+    if (sub.endDate) {
+      await scheduleEndDateReminder(sub.name, sub.endDate, reminderHour);
+    }
   }
 }
 

@@ -131,7 +131,12 @@ export default function DetailScreen() {
           />
           {subscription.paymentMethod && <InfoRow label="결제 수단" value={subscription.paymentMethod} colors={colors} />}
           {subscription.startDate && <InfoRow label="구독 시작일" value={dayjs(subscription.startDate).format('YYYY년 M월 D일')} colors={colors} />}
-          {subscription.endDate && <InfoRow label="약정 종료일" value={dayjs(subscription.endDate).format('YYYY년 M월 D일')} colors={colors} />}
+          {subscription.endDate && (() => {
+            const daysLeft = dayjs(subscription.endDate).diff(dayjs(), 'day');
+            const endLabel = dayjs(subscription.endDate).format('YYYY년 M월 D일');
+            const badge = daysLeft < 0 ? ' (만료됨)' : daysLeft <= 7 ? ` (${daysLeft}일 남음)` : daysLeft <= 30 ? ` (${daysLeft}일 남음)` : '';
+            return <InfoRow label="약정 종료일" value={`${endLabel}${badge}`} colors={colors} />;
+          })()}
           <InfoRow label="등록일" value={dayjs(subscription.createdAt).format('YYYY년 M월 D일')} colors={colors} />
           {subscription.memo && <InfoRow label="메모" value={subscription.memo} colors={colors} />}
         </View>

@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import dayjs from 'dayjs';
 import { Subscription } from '../types/subscription';
 import { CATEGORIES } from '../constants/colors';
 import { useTheme } from '../hooks/useTheme';
@@ -40,7 +41,14 @@ export default function SubscriptionCard({ subscription, onPress }: Props) {
       </View>
       <View style={styles.info}>
         <Text style={styles.name}>{subscription.name}</Text>
-        <Text style={styles.category}>{category?.label ?? subscription.category}</Text>
+        <View style={styles.categoryRow}>
+          <Text style={styles.category}>{category?.label ?? subscription.category}</Text>
+          {subscription.endDate && dayjs(subscription.endDate).diff(dayjs(), 'day') <= 7 && dayjs(subscription.endDate).diff(dayjs(), 'day') >= 0 && (
+            <View style={styles.endBadge}>
+              <Text style={styles.endBadgeText}>{dayjs(subscription.endDate).diff(dayjs(), 'day')}일 남음</Text>
+            </View>
+          )}
+        </View>
       </View>
       <View style={styles.priceContainer}>
         <Text style={styles.price}>{formatPrice(subscription.price, subscription.currency)}</Text>
@@ -85,10 +93,26 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     fontWeight: '600',
     color: colors.text,
   },
+  categoryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 2,
+  },
   category: {
     fontSize: 13,
     color: colors.textSecondary,
-    marginTop: 2,
+  },
+  endBadge: {
+    backgroundColor: colors.warning,
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  endBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#2D3436',
   },
   priceContainer: {
     alignItems: 'flex-end',
