@@ -202,14 +202,14 @@ export default function SettingsScreen() {
           </View>
           <TouchableOpacity
             style={styles.row}
-            onPress={() => Linking.openURL('https://min-seon-gyu.github.io/subtly-project/legal/privacy.html')}
+            onPress={() => Linking.openURL('https://min-seon-gyu.github.io/subtly/legal/privacy.html')}
           >
             <Text style={styles.rowLabel}>개인정보처리방침</Text>
             <Text style={styles.rowValue}>{'>'}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.row}
-            onPress={() => Linking.openURL('https://min-seon-gyu.github.io/subtly-project/legal/terms.html')}
+            onPress={() => Linking.openURL('https://min-seon-gyu.github.io/subtly/legal/terms.html')}
           >
             <Text style={styles.rowLabel}>이용약관</Text>
             <Text style={styles.rowValue}>{'>'}</Text>
