@@ -29,7 +29,7 @@ export default function UpcomingPayments({ payments }: Props) {
             </Text>
           </View>
           <View style={styles.right}>
-            <Text style={styles.price}>{formatPrice(payment.subscription.price)}</Text>
+            <Text style={styles.price}>{formatPrice(payment.subscription.price, payment.subscription.currency)}</Text>
             <Text style={styles.daysUntil}>
               {payment.daysUntil === 0 ? '오늘' : `${payment.daysUntil}일 후`}
             </Text>

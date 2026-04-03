@@ -32,7 +32,7 @@ export default function SubscriptionCard({ subscription, onPress }: Props) {
       onPress={() => onPress(subscription)}
       activeOpacity={0.7}
       accessible={true}
-      accessibilityLabel={`${subscription.name}, ${getCycleLabel(subscription.billingCycle)} ${subscription.price}원`}
+      accessibilityLabel={`${subscription.name}, ${getCycleLabel(subscription.billingCycle)} ${formatPrice(subscription.price, subscription.currency)}`}
       accessibilityRole="button"
     >
       <View style={[styles.iconContainer, { backgroundColor: subscription.color + '20' }]}>

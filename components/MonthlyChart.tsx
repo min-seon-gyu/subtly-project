@@ -18,11 +18,11 @@ export default function MonthlyChart({ totalMonthly, totalYearly, activeCount }:
   return (
     <View style={styles.container}>
       <Text style={styles.label}>이번 달 구독료</Text>
-      <CountUp value={totalMonthly} format={formatPrice} style={styles.totalPrice} />
+      <CountUp value={totalMonthly} format={(n) => formatPrice(n, 'KRW')} style={styles.totalPrice} />
       <View style={styles.subInfoRow}>
         <View style={styles.subInfo}>
           <Text style={styles.subLabel}>연간 예상</Text>
-          <CountUp value={totalYearly} format={formatPrice} style={styles.subValue} />
+          <CountUp value={totalYearly} format={(n) => formatPrice(n, 'KRW')} style={styles.subValue} />
         </View>
         <View style={styles.divider} />
         <View style={styles.subInfo}>

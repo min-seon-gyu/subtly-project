@@ -19,19 +19,22 @@ export default function MonthlyReport({ subscriptions }: Props) {
 
   if (active.length === 0 && paused.length === 0) return null;
 
-  const totalMonthly = active.reduce((sum, s) => {
-    if (s.billingCycle === 'monthly') return sum + s.price;
-    if (s.billingCycle === 'yearly') return sum + Math.round(s.price / 12);
-    if (s.billingCycle === 'weekly') return sum + s.price * 4;
-    return sum;
-  }, 0);
+  const toMonthly = (s: Subscription) => {
+    if (s.billingCycle === 'monthly') return s.price;
+    if (s.billingCycle === 'yearly') return Math.round(s.price / 12);
+    if (s.billingCycle === 'weekly') return s.price * 4;
+    return s.price;
+  };
 
-  const pausedSavings = paused.reduce((sum, s) => {
-    if (s.billingCycle === 'monthly') return sum + s.price;
-    if (s.billingCycle === 'yearly') return sum + Math.round(s.price / 12);
-    if (s.billingCycle === 'weekly') return sum + s.price * 4;
-    return sum;
-  }, 0);
+  const krwActive = active.filter((s) => (s.currency ?? 'KRW') === 'KRW');
+  const usdActive = active.filter((s) => s.currency === 'USD');
+  const krwTotal = krwActive.reduce((sum, s) => sum + toMonthly(s), 0);
+  const usdTotal = usdActive.reduce((sum, s) => sum + toMonthly(s), 0);
+
+  const krwPaused = paused.filter((s) => (s.currency ?? 'KRW') === 'KRW');
+  const usdPaused = paused.filter((s) => s.currency === 'USD');
+  const krwPausedSavings = krwPaused.reduce((sum, s) => sum + toMonthly(s), 0);
+  const usdPausedSavings = usdPaused.reduce((sum, s) => sum + toMonthly(s), 0);
 
   const mostExpensive = active.length > 0
     ? [...active].sort((a, b) => b.price - a.price)[0]
@@ -45,17 +48,23 @@ export default function MonthlyReport({ subscriptions }: Props) {
 
   const insights: string[] = [];
 
-  if (totalMonthly > 0) {
-    insights.push(`이번 달 구독 지출은 ${formatPrice(totalMonthly)}이에요.`);
+  if (krwTotal > 0 || usdTotal > 0) {
+    const parts = [];
+    if (krwTotal > 0) parts.push(formatPrice(krwTotal, 'KRW'));
+    if (usdTotal > 0) parts.push(formatPrice(usdTotal, 'USD'));
+    insights.push(`이번 달 구독 지출은 ${parts.join(' + ')}이에요.`);
   }
-  if (totalMonthly > 100000) {
-    insights.push(`월 10만원 이상 구독 중이에요. 불필요한 구독이 없는지 확인해보세요.`);
+  if (krwTotal > 100000) {
+    insights.push(`원화 구독만 월 10만원 이상이에요. 불필요한 구독이 없는지 확인해보세요.`);
   }
-  if (pausedSavings > 0) {
-    insights.push(`일시정지한 구독으로 월 ${formatPrice(pausedSavings)}을 절약하고 있어요.`);
+  if (krwPausedSavings > 0 || usdPausedSavings > 0) {
+    const parts = [];
+    if (krwPausedSavings > 0) parts.push(formatPrice(krwPausedSavings, 'KRW'));
+    if (usdPausedSavings > 0) parts.push(formatPrice(usdPausedSavings, 'USD'));
+    insights.push(`일시정지한 구독으로 월 ${parts.join(' + ')}을 절약하고 있어요.`);
   }
   if (mostExpensive) {
-    insights.push(`가장 비싼 구독은 ${mostExpensive.name} (${formatPrice(mostExpensive.price)})이에요.`);
+    insights.push(`가장 비싼 구독은 ${mostExpensive.name} (${formatPrice(mostExpensive.price, mostExpensive.currency)})이에요.`);
   }
   if (endingSoon.length > 0) {
     insights.push(`${endingSoon.map((s) => s.name).join(', ')} 약정이 곧 종료돼요.`);

@@ -48,9 +48,9 @@ export default function SettingsScreen() {
       Alert.alert('내보내기', '내보낼 구독 데이터가 없습니다.');
       return;
     }
-    const header = '서비스명,금액,결제주기,결제일,카테고리,상태,결제수단,시작일,종료일,메모';
+    const header = '서비스명,금액,통화,결제주기,결제일,카테고리,상태,결제수단,시작일,종료일,메모';
     const rows = subscriptions.map((s) =>
-      [s.name, s.price, s.billingCycle, s.billingDate, s.category, s.isActive ? '활성' : '비활성', s.paymentMethod ?? '', s.startDate ?? '', s.endDate ?? '', s.memo ?? ''].join(',')
+      [s.name, s.price, s.currency ?? 'KRW', s.billingCycle, s.billingDate, s.category, s.isActive ? '활성' : '비활성', s.paymentMethod ?? '', s.startDate ?? '', s.endDate ?? '', s.memo ?? ''].join(',')
     );
     const csv = [header, ...rows].join('\n');
     try {

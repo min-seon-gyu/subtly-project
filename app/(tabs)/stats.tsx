@@ -23,25 +23,25 @@ export default function StatsScreen() {
   );
 
   const active = subscriptions.filter((s) => s.isActive);
+  const krwActive = active.filter((s) => (s.currency ?? 'KRW') === 'KRW');
+  const usdActive = active.filter((s) => s.currency === 'USD');
 
-  // 최근 6개월 월별 지출 데이터 생성
+  const toMonthly = (s: typeof active[0]) => {
+    if (s.billingCycle === 'monthly') return s.price;
+    if (s.billingCycle === 'yearly') return Math.round(s.price / 12);
+    if (s.billingCycle === 'weekly') return s.price * 4;
+    return s.price;
+  };
+
+  // 최근 6개월 월별 지출 데이터 (KRW 기준)
   const monthlyData = Array.from({ length: 6 }, (_, i) => {
     const month = dayjs().subtract(5 - i, 'month');
-    const total = active.reduce((sum, s) => {
-      if (s.billingCycle === 'monthly') return sum + s.price;
-      if (s.billingCycle === 'yearly') return sum + Math.round(s.price / 12);
-      if (s.billingCycle === 'weekly') return sum + s.price * 4;
-      return sum;
-    }, 0);
+    const total = krwActive.reduce((sum, s) => sum + toMonthly(s), 0);
     return { label: month.format('M월'), value: total };
   });
 
-  const totalMonthly = active.reduce((sum, s) => {
-    if (s.billingCycle === 'monthly') return sum + s.price;
-    if (s.billingCycle === 'yearly') return sum + Math.round(s.price / 12);
-    if (s.billingCycle === 'weekly') return sum + s.price * 4;
-    return sum;
-  }, 0);
+  const totalMonthly = krwActive.reduce((sum, s) => sum + toMonthly(s), 0);
+  const totalMonthlyUsd = usdActive.reduce((sum, s) => sum + toMonthly(s), 0);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -70,16 +70,22 @@ export default function StatsScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>요약</Text>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>월간 지출</Text>
-            <Text style={styles.summaryValue}>{formatPrice(totalMonthly)}</Text>
+            <Text style={styles.summaryLabel}>월간 지출 (KRW)</Text>
+            <Text style={styles.summaryValue}>{formatPrice(totalMonthly, 'KRW')}</Text>
           </View>
+          {totalMonthlyUsd > 0 && (
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>월간 지출 (USD)</Text>
+              <Text style={styles.summaryValue}>{formatPrice(totalMonthlyUsd, 'USD')}</Text>
+            </View>
+          )}
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>연간 예상</Text>
-            <Text style={styles.summaryValue}>{formatPrice(totalMonthly * 12)}</Text>
+            <Text style={styles.summaryValue}>{formatPrice(totalMonthly * 12, 'KRW')}{totalMonthlyUsd > 0 ? ` + ${formatPrice(totalMonthlyUsd * 12, 'USD')}` : ''}</Text>
           </View>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>일 평균</Text>
-            <Text style={styles.summaryValue}>{formatPrice(Math.round(totalMonthly / 30))}</Text>
+            <Text style={styles.summaryLabel}>일 평균 (KRW)</Text>
+            <Text style={styles.summaryValue}>{formatPrice(Math.round(totalMonthly / 30), 'KRW')}</Text>
           </View>
           <View style={[styles.summaryRow, { borderBottomWidth: 0 }]}>
             <Text style={styles.summaryLabel}>활성 구독 수</Text>
@@ -99,16 +105,16 @@ export default function StatsScreen() {
                 <>
                   <View style={styles.summaryRow}>
                     <Text style={styles.summaryLabel}>지난달</Text>
-                    <Text style={styles.summaryValue}>{formatPrice(lastMonth)}</Text>
+                    <Text style={styles.summaryValue}>{formatPrice(lastMonth, 'KRW')}</Text>
                   </View>
                   <View style={styles.summaryRow}>
                     <Text style={styles.summaryLabel}>이번달</Text>
-                    <Text style={styles.summaryValue}>{formatPrice(totalMonthly)}</Text>
+                    <Text style={styles.summaryValue}>{formatPrice(totalMonthly, 'KRW')}</Text>
                   </View>
                   <View style={[styles.summaryRow, { borderBottomWidth: 0 }]}>
                     <Text style={styles.summaryLabel}>변동</Text>
                     <Text style={[styles.summaryValue, { color: isUp ? colors.danger : colors.success }]}>
-                      {isUp ? '+' : ''}{formatPrice(diff)} ({isUp ? '+' : ''}{percent}%)
+                      {isUp ? '+' : ''}{formatPrice(diff, 'KRW')} ({isUp ? '+' : ''}{percent}%)
                     </Text>
                   </View>
                 </>
@@ -129,7 +135,7 @@ export default function StatsScreen() {
                     <Text style={styles.rankNumber}>{i + 1}</Text>
                     <Text style={styles.summaryLabel}>{sub.name}</Text>
                   </View>
-                  <Text style={styles.summaryValue}>{formatPrice(sub.price)}</Text>
+                  <Text style={styles.summaryValue}>{formatPrice(sub.price, sub.currency)}</Text>
                 </View>
               ))}
           </View>
