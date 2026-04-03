@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   ActivityIndicator,
+  Switch,
   type TextInput as TextInputType,
   TouchableOpacity,
   StyleSheet,
@@ -50,6 +51,7 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
   const [category, setCategory] = useState(initialValues?.category ?? 'other');
   const [memo, setMemo] = useState(initialValues?.memo ?? '');
   const [currency, setCurrency] = useState<Currency>(initialValues?.currency ?? 'KRW');
+  const [isFreeTrial, setIsFreeTrial] = useState(initialValues?.isFreeTrial ?? false);
   const [startDate, setStartDate] = useState(initialValues?.startDate ?? '');
   const [endDate, setEndDate] = useState(initialValues?.endDate ?? '');
   const [paymentMethod, setPaymentMethod] = useState(initialValues?.paymentMethod ?? '');
@@ -79,6 +81,7 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
       endDate: endDate.trim() || undefined,
       paymentMethod: paymentMethod.trim() || undefined,
       currency,
+      isFreeTrial,
     });
   };
 
@@ -210,8 +213,20 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
         <Text style={styles.label}>구독 시작일 (선택)</Text>
         <DateInput value={startDate} onChange={setStartDate} placeholder="시작일 선택" />
 
-        <Text style={styles.label}>약정 종료일 (선택)</Text>
-        <DateInput value={endDate} onChange={setEndDate} placeholder="종료일 선택" />
+        <View style={styles.freeTrialRow}>
+          <View>
+            <Text style={styles.label}>무료 체험 중</Text>
+            <Text style={styles.freeTrialSub}>종료일을 설정하면 만료 전 알림을 받습니다</Text>
+          </View>
+          <Switch
+            value={isFreeTrial}
+            onValueChange={setIsFreeTrial}
+            trackColor={{ true: colors.primary }}
+          />
+        </View>
+
+        <Text style={styles.label}>{isFreeTrial ? '체험 만료일' : '약정 종료일 (선택)'}</Text>
+        <DateInput value={endDate} onChange={setEndDate} placeholder={isFreeTrial ? '만료일 선택' : '종료일 선택'} />
 
         <Text style={styles.label}>메모 (선택)</Text>
         <TextInput
@@ -324,6 +339,17 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: colors.text,
+  },
+  freeTrialRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  freeTrialSub: {
+    fontSize: 11,
+    color: colors.textMuted,
+    marginTop: 2,
   },
   memoInput: {
     height: 80,

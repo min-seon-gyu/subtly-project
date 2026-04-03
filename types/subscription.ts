@@ -17,6 +17,7 @@ export interface Subscription {
   endDate?: string;     // 약정 종료일
   paymentMethod?: string;
   currency: Currency;
+  isFreeTrial?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,6 +48,7 @@ export interface CreateSubscriptionRequest {
   endDate?: string;
   paymentMethod?: string;
   currency?: Currency;
+  isFreeTrial?: boolean;
 }
 
 export type UpdateSubscriptionRequest = Partial<CreateSubscriptionRequest> & {

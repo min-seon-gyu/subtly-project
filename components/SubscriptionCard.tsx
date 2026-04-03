@@ -43,7 +43,12 @@ export default function SubscriptionCard({ subscription, onPress }: Props) {
         <Text style={styles.name}>{subscription.name}</Text>
         <View style={styles.categoryRow}>
           <Text style={styles.category}>{category?.label ?? subscription.category}</Text>
-          {subscription.endDate && dayjs(subscription.endDate).diff(dayjs(), 'day') <= 7 && dayjs(subscription.endDate).diff(dayjs(), 'day') >= 0 && (
+          {subscription.isFreeTrial && subscription.endDate && (
+            <View style={[styles.endBadge, { backgroundColor: colors.primary + '20' }]}>
+              <Text style={[styles.endBadgeText, { color: colors.primary }]}>체험 {Math.max(0, dayjs(subscription.endDate).diff(dayjs(), 'day'))}일</Text>
+            </View>
+          )}
+          {!subscription.isFreeTrial && subscription.endDate && dayjs(subscription.endDate).diff(dayjs(), 'day') <= 7 && dayjs(subscription.endDate).diff(dayjs(), 'day') >= 0 && (
             <View style={styles.endBadge}>
               <Text style={styles.endBadgeText}>{dayjs(subscription.endDate).diff(dayjs(), 'day')}일 남음</Text>
             </View>

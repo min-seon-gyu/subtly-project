@@ -145,6 +145,7 @@ function mapSubscription(data: any): Subscription {
     endDate: data.endDate,
     paymentMethod: data.paymentMethod,
     currency: data.currency ?? 'KRW',
+    isFreeTrial: data.isFreeTrial ?? false,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   };
