@@ -22,11 +22,11 @@ export default function LoginScreen() {
         `&client_id=${KAKAO_REST_API_KEY}` +
         `&redirect_uri=${encodeURIComponent(KAKAO_REDIRECT_URI)}`;
 
-      const result = await WebBrowser.openAuthSessionAsync(authUrl, KAKAO_REDIRECT_URI);
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, 'subtly://auth');
 
       if (result.type === 'success' && result.url) {
-        const parsed = Linking.parse(result.url);
-        const code = parsed.queryParams?.code as string | undefined;
+        const params = new URLSearchParams(result.url.split('?')[1]);
+        const code = params.get('code');
 
         if (code) {
           await kakaoLogin(code, KAKAO_REDIRECT_URI);

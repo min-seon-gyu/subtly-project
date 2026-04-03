@@ -14,10 +14,10 @@ interface AuthState {
   refreshToken: () => Promise<boolean>;
 }
 
-async function saveTokens(accessToken: string, refreshToken: string, nickname: string) {
+async function saveTokens(accessToken: string, refreshToken: string, nickname: string | null) {
   await SecureStore.setItemAsync('token', accessToken);
   await SecureStore.setItemAsync('refreshToken', refreshToken);
-  await SecureStore.setItemAsync('nickname', nickname);
+  await SecureStore.setItemAsync('nickname', nickname ?? '사용자');
 }
 
 async function clearTokens() {
@@ -43,7 +43,9 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   kakaoLogin: async (code, redirectUri) => {
     const res = await axios.post(`${API_BASE_URL}/api/auth/kakao`, { code, redirectUri });
-    const { accessToken, refreshToken, nickname } = res.data;
+    const accessToken = String(res.data.accessToken ?? '');
+    const refreshToken = String(res.data.refreshToken ?? '');
+    const nickname = String(res.data.nickname ?? '사용자');
     await saveTokens(accessToken, refreshToken, nickname);
     set({ token: accessToken, nickname });
   },
