@@ -7,6 +7,7 @@ import com.subtly.subscription.dto.CreateSubscriptionRequest
 import com.subtly.subscription.dto.UpdateSubscriptionRequest
 import com.subtly.subscription.entity.BillingCycle
 import com.subtly.subscription.repository.SubscriptionRepository
+import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -166,6 +167,57 @@ class SubscriptionServiceTest {
         assertThat(summary.totalMonthly).isEqualTo(28900)
         assertThat(summary.totalYearly).isEqualTo(28900 * 12)
         assertThat(summary.upcomingPayments).hasSizeLessThanOrEqualTo(5)
+    }
+
+    @Test
+    fun `구독 생성 시 신규 필드 저장`() {
+        val request = CreateSubscriptionRequest(
+            name = "Netflix", price = 17000,
+            billingCycle = BillingCycle.MONTHLY, billingDate = 15,
+            category = "video", color = "#E50914", icon = "N",
+            startDate = LocalDate.of(2025, 1, 1),
+            endDate = LocalDate.of(2026, 1, 1),
+            paymentMethod = "신한카드",
+        )
+        val response = subscriptionService.createSubscription(memberId, request)
+
+        assertThat(response.startDate).isEqualTo("2025-01-01")
+        assertThat(response.endDate).isEqualTo("2026-01-01")
+        assertThat(response.paymentMethod).isEqualTo("신한카드")
+    }
+
+    @Test
+    fun `구독 일시정지 시 pausedUntil 설정`() {
+        val created = subscriptionService.createSubscription(memberId, createRequest())
+
+        val updated = subscriptionService.updateSubscription(
+            memberId, created.id,
+            UpdateSubscriptionRequest(
+                isActive = false,
+                pausedUntil = LocalDate.of(2025, 6, 1),
+            )
+        )
+
+        assertThat(updated.isActive).isFalse()
+        assertThat(updated.pausedUntil).isEqualTo("2025-06-01")
+    }
+
+    @Test
+    fun `구독 재개 시 pausedUntil 초기화`() {
+        val created = subscriptionService.createSubscription(memberId, createRequest())
+
+        subscriptionService.updateSubscription(
+            memberId, created.id,
+            UpdateSubscriptionRequest(isActive = false, pausedUntil = LocalDate.of(2025, 6, 1))
+        )
+
+        val resumed = subscriptionService.updateSubscription(
+            memberId, created.id,
+            UpdateSubscriptionRequest(isActive = true, clearPausedUntil = true)
+        )
+
+        assertThat(resumed.isActive).isTrue()
+        assertThat(resumed.pausedUntil).isNull()
     }
 
     @Test

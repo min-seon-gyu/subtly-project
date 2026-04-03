@@ -61,7 +61,7 @@ export default function StatsScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>카테고리별 비율</Text>
           {active.length > 0 ? (
-            <CategoryPieChart subscriptions={subscriptions} />
+            <CategoryPieChart subscriptions={active} />
           ) : (
             <Text style={styles.noData}>데이터가 없습니다</Text>
           )}

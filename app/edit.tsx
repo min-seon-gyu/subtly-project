@@ -46,7 +46,12 @@ export default function EditScreen() {
             billingCycle: subscription.billingCycle,
             billingDate: subscription.billingDate,
             category: subscription.category,
+            color: subscription.color,
+            icon: subscription.icon,
             memo: subscription.memo,
+            startDate: subscription.startDate,
+            endDate: subscription.endDate,
+            paymentMethod: subscription.paymentMethod,
           }}
           onSubmit={handleSubmit}
           onCancel={() => router.back()}
