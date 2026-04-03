@@ -43,7 +43,7 @@ export default function SubscriptionCard({ subscription, onPress }: Props) {
         <Text style={styles.category}>{category?.label ?? subscription.category}</Text>
       </View>
       <View style={styles.priceContainer}>
-        <Text style={styles.price}>{formatPrice(subscription.price)}</Text>
+        <Text style={styles.price}>{formatPrice(subscription.price, subscription.currency)}</Text>
         <Text style={styles.cycle}>{getCycleLabel(subscription.billingCycle)}</Text>
       </View>
     </TouchableOpacity>

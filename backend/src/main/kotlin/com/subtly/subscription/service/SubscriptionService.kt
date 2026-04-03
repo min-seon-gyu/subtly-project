@@ -35,6 +35,7 @@ class SubscriptionService(
                 startDate = request.startDate,
                 endDate = request.endDate,
                 paymentMethod = request.paymentMethod,
+                currency = request.currency,
                 memberId = memberId,
             )
         )
@@ -64,6 +65,7 @@ class SubscriptionService(
             endDate = request.endDate,
             setPaymentMethod = request.paymentMethod != null,
             paymentMethod = request.paymentMethod,
+            currency = request.currency,
         )
         return SubscriptionResponse.from(subscription)
     }

@@ -46,6 +46,9 @@ class Subscription(
     var paymentMethod: String? = null,
 
     @Column(nullable = false)
+    var currency: String = "KRW",
+
+    @Column(nullable = false)
     val memberId: Long,
 
     @Id
@@ -74,6 +77,7 @@ class Subscription(
         endDate: LocalDate? = null,
         setPaymentMethod: Boolean = false,
         paymentMethod: String? = null,
+        currency: String? = null,
     ) {
         name?.let { this.name = it }
         price?.let { this.price = it }
@@ -88,6 +92,7 @@ class Subscription(
         if (setStartDate) this.startDate = startDate
         if (setEndDate) this.endDate = endDate
         if (setPaymentMethod) this.paymentMethod = paymentMethod
+        currency?.let { this.currency = it }
         this.updatedAt = LocalDateTime.now()
     }
 }

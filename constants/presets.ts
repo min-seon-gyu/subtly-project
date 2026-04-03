@@ -27,12 +27,12 @@ export const PRESETS: SubscriptionPreset[] = [
   { name: 'Vibe', price: 10900, billingCycle: 'monthly', category: 'music', color: '#1EC800', icon: 'VB' },
 
   // 생산성
-  { name: 'ChatGPT Plus', price: 30000, billingCycle: 'monthly', category: 'productivity', color: '#10A37F', icon: 'GP' },
-  { name: 'Claude Pro', price: 30000, billingCycle: 'monthly', category: 'productivity', color: '#D97757', icon: 'CL' },
-  { name: 'Notion', price: 10000, billingCycle: 'monthly', category: 'productivity', color: '#000000', icon: 'No' },
-  { name: 'GitHub Copilot', price: 13000, billingCycle: 'monthly', category: 'productivity', color: '#24292E', icon: 'GH' },
-  { name: 'Figma', price: 18000, billingCycle: 'monthly', category: 'productivity', color: '#F24E1E', icon: 'Fi' },
-  { name: 'Adobe CC', price: 75900, billingCycle: 'monthly', category: 'productivity', color: '#FF0000', icon: 'Ad' },
+  { name: 'ChatGPT Plus', price: 20, billingCycle: 'monthly', category: 'productivity', color: '#10A37F', icon: 'GP', currency: 'USD' },
+  { name: 'Claude Pro', price: 20, billingCycle: 'monthly', category: 'productivity', color: '#D97757', icon: 'CL', currency: 'USD' },
+  { name: 'Notion', price: 10, billingCycle: 'monthly', category: 'productivity', color: '#000000', icon: 'No', currency: 'USD' },
+  { name: 'GitHub Copilot', price: 10, billingCycle: 'monthly', category: 'productivity', color: '#24292E', icon: 'GH', currency: 'USD' },
+  { name: 'Figma', price: 15, billingCycle: 'monthly', category: 'productivity', color: '#F24E1E', icon: 'Fi', currency: 'USD' },
+  { name: 'Adobe CC', price: 59.99, billingCycle: 'monthly', category: 'productivity', color: '#FF0000', icon: 'Ad', currency: 'USD' },
   { name: 'Microsoft 365', price: 8900, billingCycle: 'monthly', category: 'productivity', color: '#0078D4', icon: 'MS' },
 
   // 클라우드

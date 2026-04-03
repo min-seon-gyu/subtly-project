@@ -14,7 +14,7 @@ import {
 import { CATEGORIES } from '../constants/colors';
 import { useTheme } from '../hooks/useTheme';
 import { ColorScheme } from '../constants/colors';
-import { BillingCycle, CreateSubscriptionRequest } from '../types/subscription';
+import { BillingCycle, Currency, CreateSubscriptionRequest } from '../types/subscription';
 import DateInput from './DateInput';
 
 interface Props {
@@ -49,6 +49,7 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
   const [billingDate, setBillingDate] = useState(initialValues?.billingDate?.toString() ?? '1');
   const [category, setCategory] = useState(initialValues?.category ?? 'other');
   const [memo, setMemo] = useState(initialValues?.memo ?? '');
+  const [currency, setCurrency] = useState<Currency>(initialValues?.currency ?? 'KRW');
   const [startDate, setStartDate] = useState(initialValues?.startDate ?? '');
   const [endDate, setEndDate] = useState(initialValues?.endDate ?? '');
   const [paymentMethod, setPaymentMethod] = useState(initialValues?.paymentMethod ?? '');
@@ -77,6 +78,7 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
       startDate: startDate.trim() || undefined,
       endDate: endDate.trim() || undefined,
       paymentMethod: paymentMethod.trim() || undefined,
+      currency,
     });
   };
 
@@ -100,8 +102,24 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
           onSubmitEditing={() => priceRef.current?.focus()}
         />
 
-        <Text style={styles.label}>금액</Text>
+        <View style={styles.priceHeader}>
+          <Text style={styles.label}>금액</Text>
+          <View style={styles.currencyToggle}>
+            {(['KRW', 'USD'] as Currency[]).map((c) => (
+              <TouchableOpacity
+                key={c}
+                style={[styles.currencyChip, currency === c && styles.currencyChipActive]}
+                onPress={() => setCurrency(c)}
+              >
+                <Text style={[styles.currencyText, currency === c && styles.currencyTextActive]}>
+                  {c === 'KRW' ? '₩ 원' : '$ USD'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
         <View style={[styles.priceRow, price.length > 0 && priceError && styles.inputError]}>
+          <Text style={styles.pricePrefix}>{currency === 'KRW' ? '₩' : '$'}</Text>
           <TextInput
             ref={priceRef}
             style={styles.priceInput}
@@ -113,7 +131,6 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
             returnKeyType="next"
             onSubmitEditing={() => billingDateRef.current?.focus()}
           />
-          <Text style={styles.priceSuffix}>원</Text>
         </View>
         {price.length > 0 && priceError && <Text style={styles.errorText}>{priceError}</Text>}
 
@@ -255,6 +272,43 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     color: colors.danger,
     marginTop: 4,
   },
+  priceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+    marginTop: 16,
+  },
+  currencyToggle: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  currencyChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  currencyChipActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  currencyText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  currencyTextActive: {
+    color: '#FFFFFF',
+  },
+  pricePrefix: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.textSecondary,
+    paddingLeft: 14,
+  },
   priceRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -270,11 +324,6 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: colors.text,
-  },
-  priceSuffix: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.textSecondary,
   },
   memoInput: {
     height: 80,

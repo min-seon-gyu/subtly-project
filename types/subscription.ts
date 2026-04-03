@@ -1,4 +1,5 @@
 export type BillingCycle = 'monthly' | 'yearly' | 'weekly';
+export type Currency = 'KRW' | 'USD';
 
 export interface Subscription {
   id: string;
@@ -14,7 +15,8 @@ export interface Subscription {
   pausedUntil?: string;
   startDate?: string;   // 구독 시작일
   endDate?: string;     // 약정 종료일
-  paymentMethod?: string; // 결제 수단 (예: 신한카드, 국민카드)
+  paymentMethod?: string;
+  currency: Currency;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,6 +46,7 @@ export interface CreateSubscriptionRequest {
   startDate?: string;
   endDate?: string;
   paymentMethod?: string;
+  currency?: Currency;
 }
 
 export type UpdateSubscriptionRequest = Partial<CreateSubscriptionRequest> & {

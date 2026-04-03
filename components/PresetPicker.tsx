@@ -62,7 +62,7 @@ export default function PresetPicker({ onSelect }: Props) {
               <Text style={styles.icon}>{preset.icon}</Text>
               <View style={styles.chipInfo}>
                 <Text style={styles.name} numberOfLines={1}>{preset.name}</Text>
-                <Text style={styles.price}>{preset.price.toLocaleString()}원</Text>
+                <Text style={styles.price}>{preset.currency === 'USD' ? `$${preset.price}` : `${preset.price.toLocaleString()}원`}</Text>
               </View>
             </TouchableOpacity>
           ))

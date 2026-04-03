@@ -33,6 +33,7 @@ data class CreateSubscriptionRequest(
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
     val paymentMethod: String? = null,
+    val currency: String = "KRW",
 )
 
 data class UpdateSubscriptionRequest(
@@ -49,7 +50,7 @@ data class UpdateSubscriptionRequest(
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
     val paymentMethod: String? = null,
-    // null과 "미전송"을 구분하기 위한 플래그
+    val currency: String? = null,
     val clearPausedUntil: Boolean = false,
 )
 
@@ -68,6 +69,7 @@ data class SubscriptionResponse(
     val startDate: String?,
     val endDate: String?,
     val paymentMethod: String?,
+    val currency: String,
     val createdAt: String,
     val updatedAt: String,
 ) {
@@ -87,6 +89,7 @@ data class SubscriptionResponse(
             startDate = entity.startDate?.toString(),
             endDate = entity.endDate?.toString(),
             paymentMethod = entity.paymentMethod,
+            currency = entity.currency,
             createdAt = entity.createdAt.toString(),
             updatedAt = entity.updatedAt.toString(),
         )

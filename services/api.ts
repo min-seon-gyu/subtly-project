@@ -54,15 +54,15 @@ client.interceptors.response.use(
 );
 
 // PREVIEW_MODE: true = mock 데이터, false = 실제 API
-const PREVIEW_MODE = false;
+const PREVIEW_MODE = true;
 
 const mockData: Subscription[] = [
-  { id: '1', name: 'Netflix', price: 17000, billingCycle: 'monthly', billingDate: 15, category: 'video', color: '#E50914', icon: 'N', isActive: true, createdAt: '2024-01-01', updatedAt: '2024-01-01' },
-  { id: '2', name: 'YouTube Premium', price: 14900, billingCycle: 'monthly', billingDate: 20, category: 'video', color: '#FF0000', icon: 'YT', isActive: true, createdAt: '2024-02-01', updatedAt: '2024-02-01' },
-  { id: '3', name: 'Spotify', price: 10900, billingCycle: 'monthly', billingDate: 5, category: 'music', color: '#1DB954', icon: 'S', isActive: true, createdAt: '2024-03-01', updatedAt: '2024-03-01' },
-  { id: '4', name: 'ChatGPT Plus', price: 30000, billingCycle: 'monthly', billingDate: 10, category: 'productivity', color: '#10A37F', icon: 'GP', isActive: true, createdAt: '2024-04-01', updatedAt: '2024-04-01' },
-  { id: '5', name: 'iCloud+', price: 1100, billingCycle: 'monthly', billingDate: 25, category: 'cloud', color: '#3693F5', icon: 'iC', isActive: true, createdAt: '2024-05-01', updatedAt: '2024-05-01' },
-  { id: '6', name: 'Disney+', price: 9900, billingCycle: 'monthly', billingDate: 1, category: 'video', color: '#113CCF', icon: 'D+', isActive: false, createdAt: '2024-06-01', updatedAt: '2024-06-01' },
+  { id: '1', name: 'Netflix', price: 17000, billingCycle: 'monthly', billingDate: 15, category: 'video', color: '#E50914', icon: 'N', currency: 'KRW', isActive: true, createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+  { id: '2', name: 'YouTube Premium', price: 14900, billingCycle: 'monthly', billingDate: 20, category: 'video', color: '#FF0000', icon: 'YT', currency: 'KRW', isActive: true, createdAt: '2024-02-01', updatedAt: '2024-02-01' },
+  { id: '3', name: 'Spotify', price: 10900, billingCycle: 'monthly', billingDate: 5, category: 'music', color: '#1DB954', icon: 'S', currency: 'KRW', isActive: true, createdAt: '2024-03-01', updatedAt: '2024-03-01' },
+  { id: '4', name: 'ChatGPT Plus', price: 20, billingCycle: 'monthly', billingDate: 10, category: 'productivity', color: '#10A37F', icon: 'GP', currency: 'USD', isActive: true, createdAt: '2024-04-01', updatedAt: '2024-04-01' },
+  { id: '5', name: 'iCloud+', price: 1100, billingCycle: 'monthly', billingDate: 25, category: 'cloud', color: '#3693F5', icon: 'iC', currency: 'KRW', isActive: true, createdAt: '2024-05-01', updatedAt: '2024-05-01' },
+  { id: '6', name: 'Disney+', price: 9900, billingCycle: 'monthly', billingDate: 1, category: 'video', color: '#113CCF', icon: 'D+', currency: 'KRW', isActive: false, createdAt: '2024-06-01', updatedAt: '2024-06-01' },
 ];
 
 function getMockSummary(subs: Subscription[]): SubscriptionSummary {
@@ -144,6 +144,7 @@ function mapSubscription(data: any): Subscription {
     startDate: data.startDate,
     endDate: data.endDate,
     paymentMethod: data.paymentMethod,
+    currency: data.currency ?? 'KRW',
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   };

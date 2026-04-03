@@ -111,7 +111,7 @@ export default function DetailScreen() {
             <Text style={styles.icon}>{subscription.icon}</Text>
           </View>
           <Text style={styles.name}>{subscription.name}</Text>
-          <Text style={styles.price}>{formatPrice(subscription.price)}</Text>
+          <Text style={styles.price}>{formatPrice(subscription.price, subscription.currency)}</Text>
           <Text style={styles.cycle}>{getCycleLabel(subscription.billingCycle)}</Text>
         </View>
 

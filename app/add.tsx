@@ -48,6 +48,7 @@ export default function AddScreen() {
             category: preset.category,
             color: preset.color,
             icon: preset.icon,
+            currency: preset.currency,
           } : undefined}
           onSubmit={handleSubmit}
           onCancel={() => router.back()}
