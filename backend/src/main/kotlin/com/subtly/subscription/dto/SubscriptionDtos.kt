@@ -34,6 +34,7 @@ data class CreateSubscriptionRequest(
     val endDate: LocalDate? = null,
     val paymentMethod: String? = null,
     val currency: String = "KRW",
+    val isFreeTrial: Boolean = false,
 )
 
 data class UpdateSubscriptionRequest(
@@ -51,6 +52,7 @@ data class UpdateSubscriptionRequest(
     val endDate: LocalDate? = null,
     val paymentMethod: String? = null,
     val currency: String? = null,
+    val isFreeTrial: Boolean? = null,
     val clearPausedUntil: Boolean = false,
 )
 
@@ -70,6 +72,7 @@ data class SubscriptionResponse(
     val endDate: String?,
     val paymentMethod: String?,
     val currency: String,
+    val isFreeTrial: Boolean,
     val createdAt: String,
     val updatedAt: String,
 ) {
@@ -90,6 +93,7 @@ data class SubscriptionResponse(
             endDate = entity.endDate?.toString(),
             paymentMethod = entity.paymentMethod,
             currency = entity.currency,
+            isFreeTrial = entity.isFreeTrial,
             createdAt = entity.createdAt.toString(),
             updatedAt = entity.updatedAt.toString(),
         )

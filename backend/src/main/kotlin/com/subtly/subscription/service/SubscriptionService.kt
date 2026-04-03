@@ -36,6 +36,7 @@ class SubscriptionService(
                 endDate = request.endDate,
                 paymentMethod = request.paymentMethod,
                 currency = request.currency,
+                isFreeTrial = request.isFreeTrial,
                 memberId = memberId,
             )
         )
@@ -66,6 +67,7 @@ class SubscriptionService(
             setPaymentMethod = request.paymentMethod != null,
             paymentMethod = request.paymentMethod,
             currency = request.currency,
+            isFreeTrial = request.isFreeTrial,
         )
         return SubscriptionResponse.from(subscription)
     }

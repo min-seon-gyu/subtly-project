@@ -49,6 +49,9 @@ class Subscription(
     var currency: String = "KRW",
 
     @Column(nullable = false)
+    var isFreeTrial: Boolean = false,
+
+    @Column(nullable = false)
     val memberId: Long,
 
     @Id
@@ -78,6 +81,7 @@ class Subscription(
         setPaymentMethod: Boolean = false,
         paymentMethod: String? = null,
         currency: String? = null,
+        isFreeTrial: Boolean? = null,
     ) {
         name?.let { this.name = it }
         price?.let { this.price = it }
@@ -93,6 +97,7 @@ class Subscription(
         if (setEndDate) this.endDate = endDate
         if (setPaymentMethod) this.paymentMethod = paymentMethod
         currency?.let { this.currency = it }
+        isFreeTrial?.let { this.isFreeTrial = it }
         this.updatedAt = LocalDateTime.now()
     }
 }
