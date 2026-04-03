@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 import Toast from 'react-native-toast-message';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useThemeStore } from '../stores/useThemeStore';
-import { useCurrencyStore } from '../stores/useCurrencyStore';
 import { useNotificationStore } from '../stores/useNotificationStore';
 import { useBudgetStore } from '../stores/useBudgetStore';
 import { useTheme } from '../hooks/useTheme';
@@ -17,37 +17,40 @@ export default function RootLayout() {
   const { colors, isDark } = useTheme();
   const { token, isLoading, loadToken } = useAuthStore();
   const { loadMode } = useThemeStore();
-  const { loadCurrency } = useCurrencyStore();
   const { load: loadNotificationSettings } = useNotificationStore();
   const { load: loadBudget } = useBudgetStore();
+  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
     if (PREVIEW_MODE) {
-      // 프리뷰 모드: mock 인증 상태 설정
       useAuthStore.setState({ token: 'preview-token', nickname: '프리뷰 유저', isLoading: false });
+      setOnboardingDone(true);
     } else {
       loadToken();
+      SecureStore.getItemAsync('onboardingDone').then((v) => setOnboardingDone(v === 'true'));
     }
     loadMode();
-    loadCurrency();
     loadNotificationSettings();
     loadBudget();
   }, []);
 
   useEffect(() => {
     if (PREVIEW_MODE) return;
-    if (isLoading) return;
+    if (isLoading || onboardingDone === null) return;
 
     const inAuthGroup = segments[0] === 'auth';
+    const inOnboarding = segments[0] === 'onboarding';
 
     if (!token && !inAuthGroup) {
       router.replace('/auth/login');
-    } else if (token && inAuthGroup) {
+    } else if (token && !onboardingDone && !inOnboarding) {
+      router.replace('/onboarding');
+    } else if (token && onboardingDone && (inAuthGroup || inOnboarding)) {
       router.replace('/');
     }
-  }, [token, isLoading, segments]);
+  }, [token, isLoading, segments, onboardingDone]);
 
   if (!PREVIEW_MODE && isLoading) {
     return (
@@ -68,6 +71,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="auth/login" options={{ headerShown: false }} />
         <Stack.Screen name="add" options={{ title: '구독 추가', presentation: 'modal' }} />
         <Stack.Screen name="edit" options={{ title: '구독 수정' }} />

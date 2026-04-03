@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -20,7 +20,7 @@ export default function HomeScreen() {
   const { monthlyBudget } = useBudgetStore();
   const { formatPrice } = useCurrencyStore();
   const router = useRouter();
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useNotification();
 
@@ -106,8 +106,6 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
-import React from 'react';
 
 const createStyles = (colors: ColorScheme) => StyleSheet.create({
   safe: {

@@ -13,6 +13,7 @@ import { CATEGORIES } from '../constants/colors';
 import { useTheme } from '../hooks/useTheme';
 import { ColorScheme } from '../constants/colors';
 import { BillingCycle, CreateSubscriptionRequest } from '../types/subscription';
+import DateInput from './DateInput';
 
 interface Props {
   initialValues?: Partial<CreateSubscriptionRequest>;
@@ -148,22 +149,10 @@ export default function SubscriptionForm({ initialValues, onSubmit, onCancel, su
         />
 
         <Text style={styles.label}>구독 시작일 (선택)</Text>
-        <TextInput
-          style={styles.input}
-          value={startDate}
-          onChangeText={setStartDate}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor={colors.textMuted}
-        />
+        <DateInput value={startDate} onChange={setStartDate} placeholder="시작일 선택" />
 
         <Text style={styles.label}>약정 종료일 (선택)</Text>
-        <TextInput
-          style={styles.input}
-          value={endDate}
-          onChangeText={setEndDate}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor={colors.textMuted}
-        />
+        <DateInput value={endDate} onChange={setEndDate} placeholder="종료일 선택" />
 
         <Text style={styles.label}>메모 (선택)</Text>
         <TextInput

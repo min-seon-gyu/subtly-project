@@ -18,6 +18,7 @@ export default function SubscriptionsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'name' | 'price' | 'date'>('name');
 
   useFocusEffect(
     useCallback(() => {
@@ -32,7 +33,7 @@ export default function SubscriptionsScreen() {
   }, []);
 
   const filtered = useMemo(() => {
-    let result = subscriptions;
+    let result = [...subscriptions];
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       result = result.filter((s) => s.name.toLowerCase().includes(q));
@@ -40,8 +41,11 @@ export default function SubscriptionsScreen() {
     if (selectedCategory) {
       result = result.filter((s) => s.category === selectedCategory);
     }
+    if (sortBy === 'name') result.sort((a, b) => a.name.localeCompare(b.name));
+    else if (sortBy === 'price') result.sort((a, b) => b.price - a.price);
+    else if (sortBy === 'date') result.sort((a, b) => a.billingDate - b.billingDate);
     return result;
-  }, [subscriptions, search, selectedCategory]);
+  }, [subscriptions, search, selectedCategory, sortBy]);
 
   const handlePress = (subscription: Subscription) => {
     router.push({ pathname: '/detail', params: { id: subscription.id } });
@@ -58,6 +62,17 @@ export default function SubscriptionsScreen() {
         </View>
         <SearchBar value={search} onChangeText={setSearch} placeholder="구독 검색" />
         <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} />
+        <View style={styles.sortRow}>
+          {([['name', '이름순'], ['price', '금액순'], ['date', '결제일순']] as const).map(([key, label]) => (
+            <TouchableOpacity
+              key={key}
+              style={[styles.sortChip, sortBy === key && styles.sortChipActive]}
+              onPress={() => setSortBy(key)}
+            >
+              <Text style={[styles.sortText, sortBy === key && styles.sortTextActive]}>{label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <FlatList
           data={filtered}
           keyExtractor={(item) => item.id}
@@ -121,6 +136,31 @@ const createStyles = (colors: ColorScheme) => StyleSheet.create({
   addButtonText: {
     fontSize: 14,
     fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  sortRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  sortChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  sortChipActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  sortText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  sortTextActive: {
     color: '#FFFFFF',
   },
   list: {

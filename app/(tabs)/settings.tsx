@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch, Alert, TextInput, Share } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, Alert, TextInput, Share, Linking } from 'react-native';
 import { SafeAreaView, ScrollView } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 import { ColorScheme } from '../../constants/colors';
 import { useAuthStore } from '../../stores/useAuthStore';
 import { useThemeStore } from '../../stores/useThemeStore';
-import { useCurrencyStore, CURRENCIES } from '../../stores/useCurrencyStore';
 import { useNotificationStore } from '../../stores/useNotificationStore';
 import { useBudgetStore } from '../../stores/useBudgetStore';
 import { useSubscriptionStore } from '../../stores/useSubscriptionStore';
@@ -22,7 +21,6 @@ export default function SettingsScreen() {
   const { enabled: notificationEnabled, reminderDays, reminderHour, setEnabled: setNotificationEnabled, setReminderDays, setReminderHour } = useNotificationStore();
   const { nickname, logout, deleteAccount } = useAuthStore();
   const { mode, setMode } = useThemeStore();
-  const { currency, setCurrency } = useCurrencyStore();
   const { monthlyBudget, setBudget } = useBudgetStore();
   const { subscriptions } = useSubscriptionStore();
   const [budgetInput, setBudgetInput] = useState(monthlyBudget?.toString() ?? '');
@@ -152,23 +150,6 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>통화</Text>
-          <View style={styles.themeRow}>
-            {CURRENCIES.map((c) => (
-              <TouchableOpacity
-                key={c.code}
-                style={[styles.themeButton, currency === c.code && styles.themeButtonActive]}
-                onPress={() => setCurrency(c.code)}
-              >
-                <Text style={[styles.themeText, currency === c.code && styles.themeTextActive]}>
-                  {c.symbol} {c.code}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.section}>
           <Text style={styles.sectionTitle}>예산</Text>
           <View style={styles.row}>
             <View style={styles.rowInfo}>
@@ -219,6 +200,20 @@ export default function SettingsScreen() {
             <Text style={styles.rowLabel}>버전</Text>
             <Text style={styles.rowValue}>1.0.0</Text>
           </View>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => Linking.openURL('https://subtly.app/privacy')}
+          >
+            <Text style={styles.rowLabel}>개인정보처리방침</Text>
+            <Text style={styles.rowValue}>{'>'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => Linking.openURL('https://subtly.app/terms')}
+          >
+            <Text style={styles.rowLabel}>이용약관</Text>
+            <Text style={styles.rowValue}>{'>'}</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
