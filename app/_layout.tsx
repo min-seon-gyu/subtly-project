@@ -41,17 +41,24 @@ export default function RootLayout() {
     if (PREVIEW_MODE) return;
     if (isLoading || onboardingDone === null) return;
 
-    const inAuthGroup = segments[0] === 'auth';
-    const inOnboarding = segments[0] === 'onboarding';
+    const checkAndNavigate = async () => {
+      const inAuthGroup = segments[0] === 'auth';
+      const inOnboarding = segments[0] === 'onboarding';
 
-    if (!token && !inAuthGroup) {
-      router.replace('/auth/login');
-    } else if (token && !onboardingDone && !inOnboarding) {
-      router.replace('/onboarding');
-    } else if (token && onboardingDone && (inAuthGroup || inOnboarding)) {
-      router.replace('/');
-    }
-  }, [token, isLoading, segments, onboardingDone]);
+      // 온보딩 완료 여부를 매번 최신 확인
+      const latestOnboarding = await SecureStore.getItemAsync('onboardingDone') === 'true';
+
+      if (!token && !inAuthGroup) {
+        router.replace('/auth/login');
+      } else if (token && !latestOnboarding && !inOnboarding) {
+        router.replace('/onboarding');
+      } else if (token && latestOnboarding && (inAuthGroup || inOnboarding)) {
+        router.replace('/');
+      }
+    };
+
+    checkAndNavigate();
+  }, [token, isLoading, segments]);
 
   if (!PREVIEW_MODE && isLoading) {
     return (

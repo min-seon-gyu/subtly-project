@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import SubscriptionForm from '../components/SubscriptionForm';
 import PresetPicker from '../components/PresetPicker';
 import { useSubscriptionStore } from '../stores/useSubscriptionStore';

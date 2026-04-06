@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { useSubscriptionStore } from '../../stores/useSubscriptionStore';
 import BarChart from '../../components/BarChart';

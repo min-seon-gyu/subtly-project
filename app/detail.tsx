@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSubscriptionStore } from '../stores/useSubscriptionStore';
 import { useTheme } from '../hooks/useTheme';
 import { ColorScheme, CATEGORIES } from '../constants/colors';
