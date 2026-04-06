@@ -23,7 +23,7 @@ export default function PressableScale({ onPress, style, disabled, haptic = true
 
   const handlePress = () => {
     if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
     }
     onPress?.();
   };

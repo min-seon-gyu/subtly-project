@@ -16,7 +16,7 @@ export default function SwipeableRow({ onDelete, children }: Props) {
   const swipeableRef = useRef<Swipeable>(null);
 
   const handleDelete = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    try { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning); } catch {}
     swipeableRef.current?.close();
     onDelete();
   };

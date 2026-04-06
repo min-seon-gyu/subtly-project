@@ -13,14 +13,18 @@ export const useThemeStore = create<ThemeState>((set) => ({
   mode: 'system',
 
   loadMode: async () => {
-    const saved = await SecureStore.getItemAsync('themeMode');
-    if (saved === 'light' || saved === 'dark' || saved === 'system') {
-      set({ mode: saved });
-    }
+    try {
+      const saved = await SecureStore.getItemAsync('themeMode');
+      if (saved === 'light' || saved === 'dark' || saved === 'system') {
+        set({ mode: saved });
+      }
+    } catch {}
   },
 
   setMode: async (mode) => {
-    await SecureStore.setItemAsync('themeMode', mode);
+    try {
+      await SecureStore.setItemAsync('themeMode', mode);
+    } catch {}
     set({ mode });
   },
 }));

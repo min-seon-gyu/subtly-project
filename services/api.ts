@@ -83,7 +83,7 @@ let _mockData = [...mockData];
 const mockApi = {
   async getSubscriptions(): Promise<Subscription[]> { return [..._mockData]; },
   async createSubscription(req: CreateSubscriptionRequest): Promise<Subscription> {
-    const newSub: Subscription = { id: Date.now().toString(), ...req, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    const newSub: Subscription = { id: Date.now().toString(), ...req, currency: req.currency ?? 'KRW', isActive: true, isFreeTrial: req.isFreeTrial ?? false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
     _mockData.push(newSub);
     return newSub;
   },

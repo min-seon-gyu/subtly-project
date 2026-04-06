@@ -88,7 +88,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       const res = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {
         refreshToken: storedRefreshToken,
       });
-      const { accessToken, refreshToken, nickname } = res.data;
+      const accessToken = String(res.data.accessToken ?? '');
+      const refreshToken = String(res.data.refreshToken ?? '');
+      const nickname = String(res.data.nickname ?? '사용자');
       await saveTokens(accessToken, refreshToken, nickname);
       set({ token: accessToken, nickname });
       return true;

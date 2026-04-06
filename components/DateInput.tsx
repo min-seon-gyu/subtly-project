@@ -99,7 +99,7 @@ export default function DateInput({ value, onChange, placeholder = '날짜 선�
         <DateTimePicker
           value={tempDate}
           mode="date"
-          display="default"
+          display="calendar"
           onChange={handleChange}
         />
       )}
