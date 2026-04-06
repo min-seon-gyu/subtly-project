@@ -3,9 +3,11 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View, Text } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import * as Linking from 'expo-linking';
 import Toast from 'react-native-toast-message';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { useAuthStore } from '../stores/useAuthStore';
+import { KAKAO_REDIRECT_URI } from '../constants/config';
 import { useThemeStore } from '../stores/useThemeStore';
 import { useNotificationStore } from '../stores/useNotificationStore';
 import { useBudgetStore } from '../stores/useBudgetStore';
@@ -35,6 +37,28 @@ export default function RootLayout() {
     loadMode();
     loadNotificationSettings();
     loadBudget();
+
+    // 딥링크로 들어온 카카오 인가코드 처리
+    const handleDeepLink = (event: { url: string }) => {
+      const url = event.url;
+      if (url.startsWith('subtly://auth')) {
+        const params = new URLSearchParams(url.split('?')[1]);
+        const code = params.get('code');
+        if (code) {
+          useAuthStore.getState().kakaoLogin(code, KAKAO_REDIRECT_URI).then(() => {
+            router.replace('/');
+          });
+        }
+      }
+    };
+    const sub = Linking.addEventListener('url', handleDeepLink);
+
+    // 앱이 딥링크로 열린 경우 (콜드 스타트)
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink({ url });
+    });
+
+    return () => sub.remove();
   }, []);
 
   useEffect(() => {
